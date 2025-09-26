@@ -28,7 +28,17 @@ This project showcases skills, projects, and contact details in a visually engag
 
 ## 📸 Screenshots  
 
-> *Screenshots of the website will be added here*  
+### 🏠 Home Page  
+![Home Page](https://github.com/user-attachments/assets/7e0e2bb0-623f-4e8a-8e8c-26a31a204869)
+
+### 👤 About Page  
+![About Page](https://github.com/user-attachments/assets/e8164431-b017-45fb-9ad9-26945da56ba5)
+
+### 📂 Projects Page  
+![Projects Page](https://github.com/user-attachments/assets/00b2db69-efe4-439d-acc3-640103a4fdf6)
+
+### ✉️ Contact Page  
+![Contact Page](https://github.com/user-attachments/assets/047d38be-b971-4e00-a582-8e79cd3043c4)
 
 ---
 
