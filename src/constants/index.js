@@ -176,7 +176,7 @@ const projects = [
       taskmate_delete_task,
       taskmate_user_details,
     ],
-    source_code_link: "https://github.com/akiyoshiyapa",
+    source_code_link: "https://github.com/Akiyoshi02",
   },
   {
     name: "RainForest Tea",
@@ -216,7 +216,7 @@ const projects = [
       rainforest_report_page1,
       rainforest_report_page2,
     ],
-    source_code_link: "https://github.com/akiyoshiyapa",
+    source_code_link: "https://github.com/Akiyoshi02",
   },
   {
     name: "LibraryOps",
@@ -244,7 +244,7 @@ const projects = [
         color: "teal-aqua-text-gradient",
       },
       {
-        name: "VS Code",
+        name: "VSCode",
         color: "cyan-purple-text-gradient",
       },
     ],
@@ -262,7 +262,7 @@ const projects = [
       library_ops_adminpanel_order_list,
       library_ops_adminpanel_admin_details,
     ],
-    source_code_link: "https://github.com/akiyoshiyapa",
+    source_code_link: "https://github.com/Akiyoshi02",
   },
 ];
 

@@ -14,6 +14,9 @@ import game from '../assets/game.png';
 
 import github from "./github.png";
 
+import arrowleft from "../assets/arrowleft.png";
+import arrowright from "../assets/arrowright.png";
+
 import taskmate_loading_screen from "./work/taskmate/loading_screen.png";
 import taskmate_log_in from "./work/taskmate/log_in.png";
 import taskmate_create_account from "./work/taskmate/create_account.png";
@@ -77,6 +80,9 @@ export {
   close,
 
   github,
+
+  arrowleft,
+  arrowright,
 
   taskmate_loading_screen,
   taskmate_log_in,
