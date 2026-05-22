@@ -347,18 +347,21 @@ function setupTestimonials(): void {
 
 let formAbort: AbortController | null = null;
 
-function getFormspreeFormId(): string {
-  return import.meta.env.PUBLIC_FORMSPREE_FORM_ID?.trim() ?? "";
+/** SMTP contact handler (Netlify Function). Also aliased as /api/contact in netlify.toml. */
+const CONTACT_ENDPOINT = "/api/contact";
+
+function isLocalDevWithoutFunctions(): boolean {
+  const host = window.location.hostname;
+  return (host === "localhost" || host === "127.0.0.1") && window.location.port !== "8888";
 }
 
-async function submitToFormspree(form: HTMLFormElement): Promise<void> {
-  const formId = getFormspreeFormId();
-  if (!formId) {
-    throw new Error("PUBLIC_FORMSPREE_FORM_ID is not configured");
+async function submitContactForm(form: HTMLFormElement): Promise<void> {
+  if (isLocalDevWithoutFunctions()) {
+    throw new Error("local-dev");
   }
 
   const data = Object.fromEntries(new FormData(form).entries());
-  const response = await fetch(`https://formspree.io/f/${formId}`, {
+  const response = await fetch(CONTACT_ENDPOINT, {
     method: "POST",
     headers: {
       Accept: "application/json",
@@ -369,13 +372,14 @@ async function submitToFormspree(form: HTMLFormElement): Promise<void> {
       email: data.email,
       subject: data.subject,
       message: data.message,
-      _subject: `Portfolio: ${data.subject}`,
+      company: data.company ?? "",
     }),
   });
 
+  const payload = (await response.json().catch(() => null)) as { error?: string; ok?: string } | null;
+
   if (!response.ok) {
-    const payload = (await response.json().catch(() => null)) as { error?: string } | null;
-    throw new Error(payload?.error ?? `Formspree submission failed (${response.status})`);
+    throw new Error(payload?.error ?? `Contact submission failed (${response.status})`);
   }
 }
 
@@ -566,17 +570,12 @@ function setupForm(): void {
         return;
       }
 
-      if (!getFormspreeFormId()) {
-        showToast("Contact form is not configured. Please use the email link.");
-        return;
-      }
-
       submit.classList.add("is-loading");
       submit.disabled = true;
       label.textContent = "Sending";
 
       try {
-        await submitToFormspree(form);
+        await submitContactForm(form);
         submit.classList.remove("is-loading");
         submit.classList.add("is-success");
         label.textContent = "Sent";
@@ -587,11 +586,17 @@ function setupForm(): void {
           submit.disabled = false;
           label.textContent = "Send Message";
         }, 1600);
-      } catch {
+      } catch (err) {
         submit.classList.remove("is-loading");
         submit.disabled = false;
         label.textContent = "Send Message";
-        showToast("Could not send. Please email me directly.");
+        if (err instanceof Error && err.message === "local-dev") {
+          showToast("Form delivery works after deploy or with netlify dev.");
+        } else if (err instanceof Error && err.message) {
+          showToast(err.message);
+        } else {
+          showToast("Could not send. Please email me directly.");
+        }
       }
     },
     { signal },

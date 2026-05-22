@@ -92,6 +92,12 @@ const subjectOptions = [
           </header>
 
           <form class="contact-form" id="contact-form" name="contact" novalidate>
+            <p class="sr-only" aria-hidden="true">
+              <label>
+                Leave this empty:
+                <input name="company" tabindex="-1" autocomplete="off" />
+              </label>
+            </p>
           <div class="form-row">
             <div class="field">
               <label for="name">Name</label>
