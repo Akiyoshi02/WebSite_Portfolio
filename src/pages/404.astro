@@ -1,0 +1,30 @@
+---
+import Base from "@/layouts/Base.astro";
+---
+
+<Base
+  title="404 | Page not found"
+  titleOverride
+  description="The page you were looking for doesn't exist."
+  hidePreloader
+  noindex
+>
+  <section class="section" style="min-height:60vh;display:grid;place-items:center;text-align:center">
+    <div class="container" style="max-width:560px">
+      <div class="section-kicker" style="display:block;margin-bottom:18px">// 404</div>
+      <h1 class="gradient-text" style="font-family:var(--font-display);font-size:clamp(4rem,12vw,8rem);line-height:1;margin-bottom:14px">
+        404
+      </h1>
+      <h2 style="font-size:clamp(1.4rem,3vw,2rem);margin-bottom:14px">
+        That page doesn&apos;t exist.
+      </h2>
+      <p style="margin-bottom:28px">
+        The link may be outdated, or it may have moved. Try the homepage or the writing index.
+      </p>
+      <div style="display:flex;gap:12px;justify-content:center;flex-wrap:wrap">
+        <a class="btn btn-primary interactive" href="/">Go home</a>
+        <a class="btn btn-secondary interactive" href="/blog">Read the blog</a>
+      </div>
+    </div>
+  </section>
+</Base>

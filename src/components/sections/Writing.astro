@@ -1,0 +1,60 @@
+---
+import { getCollection } from "astro:content";
+
+const allPosts = (await getCollection("posts", ({ data }) => !data.draft)).sort(
+  (a, b) => b.data.pubDate.getTime() - a.data.pubDate.getTime(),
+);
+
+const latest = allPosts.slice(0, 3);
+
+function formatDate(date: Date) {
+  return new Intl.DateTimeFormat("en-US", {
+    year: "numeric",
+    month: "short",
+    day: "numeric",
+  }).format(date);
+}
+
+function readingTime(text: string) {
+  const words = text.split(/\s+/).filter(Boolean).length;
+  return Math.max(1, Math.round(words / 220));
+}
+---
+
+<section class="section" id="writing" data-animate>
+  <div class="container">
+    <div class="section-heading">
+      <div class="section-kicker">// 07. Writing</div>
+      <h2>Latest Thoughts</h2>
+      <p>Notes on software, systems, and the craft of building.</p>
+    </div>
+
+    <div class="blog-grid">
+      {latest.map((post) => {
+        const slug = post.id.replace(/\.(md|mdx)$/, "");
+        const minutes = readingTime(post.body ?? "");
+        return (
+          <article class="blog-card glass">
+            <div>
+              {post.data.tags[0] && <span class="category-badge">{post.data.tags[0]}</span>}
+              <h3 style="margin-top:16px">
+                <a href={`/blog/${slug}`}>{post.data.title}</a>
+              </h3>
+              <p style="margin-top:12px">{post.data.description}</p>
+            </div>
+            <div class="project-title-row">
+              <span class="section-kicker">
+                {minutes} min · {formatDate(post.data.pubDate)}
+              </span>
+              <a class="interactive" href={`/blog/${slug}`}>Read More →</a>
+            </div>
+          </article>
+        );
+      })}
+    </div>
+
+    <div style="margin-top:26px">
+      <a class="btn btn-secondary interactive" href="/blog">View All Posts →</a>
+    </div>
+  </div>
+</section>

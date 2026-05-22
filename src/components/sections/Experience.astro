@@ -1,0 +1,46 @@
+---
+import { getCollection } from "astro:content";
+
+const work = (await getCollection("work")).sort(
+  (a, b) => b.data.order - a.data.order,
+);
+---
+
+<section class="section" id="experience" data-animate>
+  <div class="container">
+    <div class="section-heading">
+      <div class="section-kicker">// 04. Experience</div>
+      <h2>A timeline of practice, shipping, and growth.</h2>
+      <p>
+        Applied work and production-minded delivery, building and maintaining software
+        in real team environments.
+      </p>
+    </div>
+
+    <div class="timeline" id="timeline">
+      {work.map((entry) => (
+        <article class="timeline-item">
+          <span class="timeline-dot" aria-hidden="true"></span>
+          <div class="timeline-card glass">
+            <div class="company-row">
+              <span class="company-logo">{entry.data.logo}</span>
+              <span>{entry.data.company}</span>
+            </div>
+            <h3>{entry.data.title}</h3>
+            <span class="date-badge">{entry.data.date}</span>
+            <ul>
+              {entry.data.bullets.map((b) => (
+                <li>{b}</li>
+              ))}
+            </ul>
+            <div class="tag-row">
+              {entry.data.tags.map((tag) => (
+                <span class="tag">{tag}</span>
+              ))}
+            </div>
+          </div>
+        </article>
+      ))}
+    </div>
+  </div>
+</section>

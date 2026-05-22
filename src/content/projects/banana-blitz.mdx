@@ -1,0 +1,36 @@
+---
+title: "Banana Blitz"
+tagline: "Browser puzzle game with multiplayer and daily challenges."
+description: "A browser-based puzzle game where players guess banana counts across multiple modes: classic levels, timed challenges, daily puzzles, achievements, customization, and real-time multiplayer with friends and matchmaking."
+category: "web"
+stack: ["HTML", "CSS", "JavaScript", "Firebase", "Tailwind CSS"]
+year: 2024
+featured: false
+wide: true
+theme: ["#ffc857", "#ff8a3c"]
+links:
+  live: "https://akiyoshi02.github.io/BananaBlitz_Game/"
+  repo: "https://github.com/Akiyoshi02/BananaBlitz_Game"
+order: 40
+---
+
+## Context
+
+Banana Blitz started as a small bet: how much real game can you build with
+plain HTML, CSS, and JavaScript? The answer turned out to be: more than
+expected, once Firebase joined the chat.
+
+## Modes
+
+- **Classic.** Progressive levels with handcrafted difficulty curves.
+- **Timed.** Beat-the-clock runs with leaderboards.
+- **Daily challenge.** One puzzle, the same for everyone, every day.
+- **Multiplayer.** Real-time matches against friends or matchmaking.
+
+## Decisions
+
+- **Firebase for the realtime spine.** Auth, presence, leaderboards, and
+  daily seeds all live behind one SDK.
+- **No build step.** Static files, deploys to GitHub Pages, loads anywhere.
+- **Achievements + customization** kept the game replayable without
+  expanding scope into a full live-ops machine.

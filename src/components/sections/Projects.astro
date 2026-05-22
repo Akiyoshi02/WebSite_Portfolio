@@ -1,0 +1,52 @@
+---
+import { getCollection } from "astro:content";
+import ProjectCard from "@/components/ProjectCard.astro";
+
+const allProjects = await getCollection("projects", ({ data }) => !data.draft);
+
+const sortedProjects = allProjects.sort((a, b) => {
+  const orderA = a.data.order ?? 1000;
+  const orderB = b.data.order ?? 1000;
+  if (orderA !== orderB) return orderA - orderB;
+  return b.data.year - a.data.year;
+});
+
+const filters = [
+  { id: "all", label: "All" },
+  { id: "web", label: "Web Apps" },
+  { id: "mobile", label: "Mobile" },
+  { id: "api", label: "APIs" },
+  { id: "open-source", label: "Open Source" },
+] as const;
+---
+
+<section class="section" id="projects" data-animate>
+  <div class="container">
+    <div class="section-heading">
+      <div class="section-kicker">// 03. Projects</div>
+      <h2>Selected builds with product depth.</h2>
+      <p>
+        Each project highlights a different slice of full stack engineering, from AI applications
+        to real-time systems and infrastructure tooling.
+      </p>
+    </div>
+
+    <div class="project-controls" role="tablist" aria-label="Project filters">
+      {filters.map((filter) => (
+        <button
+          class={`filter-btn interactive ${filter.id === "all" ? "is-active" : ""}`}
+          type="button"
+          data-filter={filter.id}
+        >
+          {filter.label}
+        </button>
+      ))}
+    </div>
+
+    <div class="projects-grid" id="projects-grid">
+      {sortedProjects.map((project) => (
+        <ProjectCard project={project} />
+      ))}
+    </div>
+  </div>
+</section>

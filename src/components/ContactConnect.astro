@@ -1,0 +1,81 @@
+---
+import Icon from "@/components/Icon.astro";
+import { site } from "@/config/site";
+
+const topics = ["Full-time", "Freelance", "Collabs", "Tech chat"] as const;
+
+type SocialKey = "x" | "instagram" | "facebook";
+
+/** Profiles not already shown as full cards on the left */
+const extraSocials: { key: SocialKey; label: string; href: string }[] = (
+  [
+    { key: "x", label: "X" },
+    { key: "instagram", label: "Instagram" },
+    { key: "facebook", label: "Facebook" },
+  ] as const
+).flatMap((item) => {
+  const href = site.socials[item.key];
+  return href ? [{ ...item, href }] : [];
+});
+
+const exploreLinks = [
+  { label: "Uses", href: "/uses" },
+  { label: "Writing", href: "/blog" },
+  { label: "Now", href: "/now" },
+] as const;
+---
+
+<aside class="contact-connect glass" aria-labelledby="contact-connect-title">
+  <h3 id="contact-connect-title" class="connect-title">Also happy to talk about</h3>
+
+  <div class="connect-grid">
+    <div class="connect-main">
+      <ul class="chip-row connect-topics" aria-label="Conversation topics">
+        {topics.map((topic) => (
+          <li class="chip">{topic}</li>
+        ))}
+      </ul>
+
+      {extraSocials.length > 0 && (
+        <div class="connect-social-row" aria-label="More social profiles">
+          {extraSocials.map((social) => (
+            <a
+              class="icon-btn tooltip interactive"
+              href={social.href}
+              rel="me noopener"
+              target="_blank"
+              data-tooltip={social.label}
+              aria-label={`${social.label} profile`}
+            >
+              <Icon name={social.key} />
+            </a>
+          ))}
+        </div>
+      )}
+    </div>
+
+    <div class="connect-side">
+      <div class="connect-side-inner">
+        <div class="connect-side-block">
+          <p class="connect-side-label">Explore</p>
+          <nav class="connect-links" aria-label="More pages">
+            <a class="connect-link interactive" href={exploreLinks[0].href}>{exploreLinks[0].label}</a>
+            <span class="connect-sep" aria-hidden="true">·</span>
+            <a class="connect-link interactive" href={exploreLinks[1].href}>{exploreLinks[1].label}</a>
+            <span class="connect-sep" aria-hidden="true">·</span>
+            <a class="connect-link interactive" href={exploreLinks[2].href}>{exploreLinks[2].label}</a>
+          </nav>
+        </div>
+
+        <div class="connect-side-block">
+          <p class="connect-side-label">Focus lately</p>
+          <ul class="chip-row connect-focus" aria-label="Current focus areas">
+            {site.focusLately.map((item) => (
+              <li class="chip">{item}</li>
+            ))}
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+</aside>

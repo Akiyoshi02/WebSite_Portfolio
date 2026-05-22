@@ -1,0 +1,41 @@
+---
+title: "InterviewAI Pro"
+tagline: "AI-powered interview practice and candidate screening platform."
+description: "An AI-driven platform for interview preparation and candidate screening: real-time AI interviewer, candidate and organization dashboards, job postings, applications, scheduling, role-based access, moderation, and automated notifications."
+category: "web"
+stack: ["React", "Vite", "Tailwind CSS", "Node.js", "Express", "Firebase", "Socket.IO", "JWT", "PWA", "Ollama", "Whisper", "Python", "MediaPipe", "SendGrid", "GitHub Actions"]
+year: 2025
+featured: true
+wide: true
+theme: ["#7b2fff", "#ff4ecd"]
+links:
+  repo: "https://github.com/Akiyoshi02/InterviewAI_Pro"
+order: 10
+---
+
+## Context
+
+InterviewAI Pro started as an experiment in turning the interview loop into
+something more interactive and structured. The goal was a single platform
+that could help candidates rehearse with a real-time AI interviewer and
+help organizations run lightweight, repeatable screening rounds.
+
+## What's in it
+
+- **Real-time AI interviewer:** speech in, speech out, with local LLM
+  responses via Ollama and transcription via Whisper.
+- **Two-sided product:** candidate dashboards for practice and applications;
+  organization dashboards for job postings, scheduling, and moderation.
+- **Role-based access control:** clearly separated permissions for
+  candidates, organization staff, and admins.
+- **Automated notifications:** transactional email via SendGrid for
+  application updates and scheduling.
+
+## Decisions
+
+- **Local-first AI.** Running models with Ollama keeps inference cost and
+  privacy under control during prototyping.
+- **PWA shell.** The candidate-facing surface installs and works offline
+  for the practice flows.
+- **Sockets, not polling.** Real-time states (live interview, application
+  status) flow over Socket.IO with reconnection handled at the client.

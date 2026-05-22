@@ -1,0 +1,37 @@
+---
+title: "CleanOps Pro"
+tagline: "Offline-first operations platform for scheduling, attendance, proof tracking, and invoicing."
+description: "A commercial cleaning operations platform built for Admin, Supervisor, and Cleaner workflows: scheduling, QR/selfie attendance, proof uploads, issue reporting, timesheets, invoice generation, and audit tracking. Focused on practical business process automation with offline-first functionality."
+category: "web"
+stack: ["React", "Vite", "Tailwind CSS", "Node.js", "Express", "Supabase", "IndexedDB", "PWA", "Docker", "Ollama", "Whisper"]
+year: 2025
+featured: true
+theme: ["#00f5d4", "#20e080"]
+links:
+  repo: "https://github.com/Tehan-Hewage/CleanOps_Pro"
+order: 20
+---
+
+## Context
+
+Field operations don't have the luxury of a stable network. CleanOps Pro
+was designed around that constraint: cleaners on site need to record
+attendance, capture proof of work, and report issues even when the
+connection is patchy or absent, and then sync cleanly when it comes back.
+
+## Three workflows, one app
+
+- **Cleaner.** QR + selfie attendance, proof uploads from the shift, fast
+  issue reporting.
+- **Supervisor.** Schedules, live shift state, exception handling,
+  timesheet review.
+- **Admin.** Roster, audit trail, invoice generation, dashboards.
+
+## Decisions
+
+- **IndexedDB-backed sync layer.** Every write hits the local store first;
+  a background worker reconciles with Supabase when online.
+- **PWA install.** No app-store overhead for a workforce that just needs to
+  open it on their phone.
+- **Audit-first design.** Every consequential action is recorded with
+  who/when/where so disputes are resolved in seconds, not days.

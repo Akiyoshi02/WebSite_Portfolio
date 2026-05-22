@@ -1,0 +1,84 @@
+---
+import { Image } from "astro:assets";
+import headshot from "@/assets/headshot.png";
+import { site } from "@/config/site";
+---
+
+<section class="section" id="about" data-animate>
+  <div class="container about-grid">
+    <div class="about-copy">
+      <div class="section-kicker">// 01. About Me</div>
+      <h2>Engineer with an eye for systems and detail.</h2>
+
+      <p>
+        I am a Software Engineering undergraduate with a strong foundation in web
+        development, backend systems, databases, and modern AI-powered applications. I
+        enjoy creating practical, user-focused digital solutions that combine clean
+        design, reliable functionality, and emerging technologies.
+      </p>
+      <p>
+        I am passionate about software engineering, artificial intelligence, and
+        problem-solving, with a strong interest in building systems that are meaningful,
+        efficient, and impactful. My goal is to continue growing as a developer while
+        applying technology to solve real-world challenges.
+      </p>
+
+      <div class="chip-row">
+        <span class="chip">Full-Stack Developer</span>
+        <span class="chip">AI Enthusiast</span>
+        <span class="chip">Web Developer</span>
+        <span class="chip">Backend Developer</span>
+        <span class="chip">Problem Solver</span>
+        <span class="chip">Tech Enthusiast</span>
+        <span class="chip">UI/UX Focused</span>
+        <span class="chip">Open to Opportunities</span>
+      </div>
+
+      <div class="stats-grid" id="stats-grid">
+        <div class="stat-card">
+          <span class="stat-number" data-count="4">0</span>
+          <span class="stat-label">Featured Projects</span>
+        </div>
+        <div class="stat-card">
+          <span class="stat-number" data-count="4">0</span>
+          <span class="stat-label">Years Coding</span>
+        </div>
+        <div class="stat-card">
+          <span class="stat-number" data-count="20">0</span>
+          <span class="stat-label">Technologies</span>
+        </div>
+        <div class="stat-card">
+          <span class="stat-number" data-count="6">0</span>
+          <span class="stat-label">Skill Domain</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="portrait-wrap">
+      <div class="portrait-frame image-hover">
+        <span class="corner-accent one" aria-hidden="true"></span>
+        <span class="corner-accent two" aria-hidden="true"></span>
+        <div class="portrait">
+          <Image
+            src={headshot}
+            alt={`Portrait of ${site.name}`}
+            widths={[320, 480, 640]}
+            sizes="(min-width: 1080px) 420px, 80vw"
+            quality={85}
+            format="webp"
+            loading="eager"
+          />
+        </div>
+      </div>
+      <div class="code-card glass">
+        <div class="dot-row" aria-hidden="true">
+          <span></span><span></span><span></span>
+        </div>
+        <div><span class="token-key">function</span> <span class="token-name">helloWorld</span>() &#123;</div>
+        <div>&nbsp;&nbsp;<span class="token-key">const</span> craft = <span class="token-string">"software"</span>;</div>
+        <div>&nbsp;&nbsp;<span class="token-key">return</span> <span class="token-fn">ship</span>(craft);</div>
+        <div>&#125;</div>
+      </div>
+    </div>
+  </div>
+</section>

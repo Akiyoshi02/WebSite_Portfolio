@@ -1,0 +1,61 @@
+---
+import Icon from "./Icon.astro";
+import { site } from "@/config/site";
+---
+
+<a class="skip-link" href="#main">Skip to content</a>
+
+<header class="site-header" id="site-header">
+  <div class="nav" aria-label="Primary navigation">
+    <a class="logo interactive" href="/" aria-label={`${site.name} home`}>
+      <img class="logo-img" src="/logo.png" alt="" width="42" height="42" decoding="async" />
+    </a>
+    <nav class="nav-links">
+      {site.nav.map((item) => (
+        <a class="nav-link interactive" href={item.href}>{item.label}</a>
+      ))}
+    </nav>
+    <div class="nav-actions">
+      <button
+        class="icon-btn theme-toggle interactive"
+        type="button"
+        id="theme-toggle"
+        aria-label="Toggle theme"
+      >
+        <Icon name="moon" class="icon moon" />
+        <Icon name="sun" class="icon sun" />
+      </button>
+      <a
+        class="btn btn-outline desktop-cv interactive"
+        href="/cv.pdf"
+        download
+      >
+        Download CV
+      </a>
+      <button
+        class="icon-btn menu-toggle interactive"
+        id="menu-toggle"
+        type="button"
+        aria-label="Open navigation menu"
+        aria-expanded="false"
+        aria-controls="mobile-menu"
+      >
+        <Icon name="menu" class="icon menu-icon" />
+        <Icon name="close" class="icon close-icon" />
+      </button>
+    </div>
+  </div>
+</header>
+
+<div class="mobile-menu" id="mobile-menu" aria-hidden="true">
+  <div class="mobile-menu-panel">
+    <nav aria-label="Mobile navigation">
+      {site.nav.map((item) => (
+        <a class="interactive" href={item.href}>{item.label}</a>
+      ))}
+      <a class="btn btn-outline interactive" href="/cv.pdf" download>
+        Download CV
+      </a>
+    </nav>
+  </div>
+</div>

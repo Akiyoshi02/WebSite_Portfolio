@@ -1,0 +1,61 @@
+---
+import { getCollection } from "astro:content";
+import Base from "@/layouts/Base.astro";
+
+const posts = (await getCollection("posts", ({ data }) => !data.draft)).sort(
+  (a, b) => b.data.pubDate.getTime() - a.data.pubDate.getTime(),
+);
+
+function formatDate(date: Date) {
+  return new Intl.DateTimeFormat("en-US", {
+    year: "numeric",
+    month: "short",
+    day: "numeric",
+  }).format(date);
+}
+---
+
+<Base
+  title="Writing"
+  description="Essays, engineering notes, and case studies."
+  hidePreloader
+>
+  <section class="section">
+    <div class="container" style="max-width:920px;margin-inline:auto">
+      <div class="section-heading">
+        <div class="section-kicker">// Writing</div>
+        <h2>Essays &amp; engineering notes</h2>
+        <p>Focused, short-form posts on building and shipping software.</p>
+      </div>
+
+      {posts.length === 0 ? (
+        <p>No posts yet. Check back soon.</p>
+      ) : (
+        <div style="display:grid;gap:14px">
+          {posts.map((post) => {
+            const slug = post.id.replace(/\.(md|mdx)$/, "");
+            return (
+              <a
+                class="blog-card glass interactive"
+                href={`/blog/${slug}`}
+                style="grid-template-columns:1fr;min-height:0"
+              >
+                <div>
+                  {post.data.tags[0] && (
+                    <span class="category-badge">{post.data.tags[0]}</span>
+                  )}
+                  <h3 style="margin-top:16px">{post.data.title}</h3>
+                  <p style="margin-top:12px">{post.data.description}</p>
+                </div>
+                <div class="project-title-row">
+                  <span class="section-kicker">{formatDate(post.data.pubDate)}</span>
+                  <span class="interactive">Read more →</span>
+                </div>
+              </a>
+            );
+          })}
+        </div>
+      )}
+    </div>
+  </section>
+</Base>

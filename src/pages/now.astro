@@ -1,0 +1,66 @@
+---
+import Base from "@/layouts/Base.astro";
+import { site } from "@/config/site";
+
+// Anchor /now to a fixed date so the page reads as a real snapshot
+// rather than "today, by accident." Update this string whenever you
+// refresh the content below.
+const LAST_UPDATED = "2026-05-21";
+
+function formatDate(input: string) {
+  return new Intl.DateTimeFormat("en-US", {
+    year: "numeric",
+    month: "long",
+    day: "numeric",
+  }).format(new Date(input));
+}
+---
+
+<Base
+  title="Now"
+  description={`What ${site.name} is focused on right now.`}
+  hidePreloader
+>
+  <section class="section">
+    <div class="container" style="max-width:680px;margin-inline:auto">
+      <div class="section-heading">
+        <div class="section-kicker">// Now</div>
+        <h2>What I&apos;m doing now</h2>
+        <p>
+          A <a href="https://nownownow.com/about" style="color:var(--accent-1)">/now</a> page:
+          a snapshot of current focus, intentionally short and updated regularly.
+        </p>
+      </div>
+
+      <div class="prose">
+        <p>
+          <strong>Location.</strong> {site.location}.
+        </p>
+        <p>
+          <strong>Working on.</strong> Junior Web Developer at
+          <a href="https://cynectex.com/">Cynectex</a>, shipping client web apps and API work,
+          while pushing forward on two personal builds:
+          <a href="/projects/interviewai-pro">InterviewAI&nbsp;Pro</a> and
+          <a href="/projects/cleanops-pro">CleanOps&nbsp;Pro</a>.
+        </p>
+        <p>
+          <strong>Studying.</strong> BSc (Hons) Software Engineering at the
+          University of Bedfordshire, UK.
+        </p>
+        <p>
+          <strong>Learning.</strong> Backend engineering depth, AI integration
+          patterns (local LLMs, retrieval, speech I/O), and system design fundamentals
+          for production-ready software.
+        </p>
+        <p>
+          <strong>Open to.</strong> Software engineering opportunities: remote, hybrid,
+          or relocation-friendly. Junior to mid-level roles where careful engineering
+          and ownership matter.
+        </p>
+        <p style="margin-top:32px;color:var(--text-muted);font-family:var(--font-mono);font-size:.85rem">
+          Last updated {formatDate(LAST_UPDATED)}.
+        </p>
+      </div>
+    </div>
+  </section>
+</Base>

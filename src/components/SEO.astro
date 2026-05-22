@@ -1,0 +1,86 @@
+---
+import { site } from "@/config/site";
+
+interface Props {
+  /** Page-specific title; appended with the site name unless `titleOverride` is true. */
+  title?: string;
+  titleOverride?: boolean;
+  /** Page-specific meta description. Falls back to `site.description`. */
+  description?: string;
+  /** Absolute or root-relative OG image URL. Falls back to a default SVG card. */
+  image?: string;
+  /** "website" | "article", used for og:type. */
+  type?: "website" | "article";
+  /** ISO-8601 publish date for articles. */
+  publishedTime?: string;
+  /** ISO-8601 modified date for articles. */
+  modifiedTime?: string;
+  /** When true, this page won't be indexed by search engines. */
+  noindex?: boolean;
+  /** Extra JSON-LD nodes to embed (an array of objects). */
+  jsonLd?: Record<string, unknown> | Record<string, unknown>[];
+}
+
+const {
+  title,
+  titleOverride = false,
+  description = site.description,
+  image,
+  type = "website",
+  publishedTime,
+  modifiedTime,
+  noindex = false,
+  jsonLd,
+} = Astro.props;
+
+const canonical = new URL(Astro.url.pathname, site.url).toString().replace(/\/$/, "") || site.url;
+
+const fullTitle = title
+  ? titleOverride
+    ? title
+    : `${title} | ${site.name}`
+  : `${site.name} | ${site.tagline}`;
+
+// Default OG image: an inline SVG data URI that matches the visual identity.
+// Replace with a real PNG/JPG in /public/og when you have one.
+const defaultOg =
+  "data:image/svg+xml," +
+  encodeURIComponent(
+    `<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1200 630'><defs><linearGradient id='g' x1='0' y1='0' x2='1' y2='1'><stop offset='0' stop-color='#00f5d4'/><stop offset='.5' stop-color='#7b2fff'/><stop offset='1' stop-color='#ff4ecd'/></linearGradient></defs><rect width='1200' height='630' fill='#050810'/><text x='90' y='250' fill='url(%23g)' font-family='Arial' font-size='44' font-weight='700'>&lt; AY /&gt;</text><text x='90' y='350' fill='#e8eaf0' font-family='Arial' font-size='92' font-weight='700'>${site.name}</text><text x='95' y='425' fill='#9aa4b2' font-family='Arial' font-size='34'>${site.tagline}</text></svg>`,
+  );
+
+const ogImage = image
+  ? new URL(image, site.url).toString()
+  : defaultOg;
+
+const allJsonLd = Array.isArray(jsonLd) ? jsonLd : jsonLd ? [jsonLd] : [];
+---
+
+<title>{fullTitle}</title>
+<meta name="description" content={description} />
+<meta name="theme-color" content={site.themeColor} />
+<meta name="generator" content={Astro.generator} />
+
+<link rel="canonical" href={canonical} />
+
+{noindex ? <meta name="robots" content="noindex, nofollow" /> : <meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1" />}
+
+<meta property="og:type" content={type} />
+<meta property="og:url" content={canonical} />
+<meta property="og:title" content={fullTitle} />
+<meta property="og:description" content={description} />
+<meta property="og:image" content={ogImage} />
+<meta property="og:locale" content={site.locale.replace("-", "_")} />
+<meta property="og:site_name" content={site.name} />
+
+{publishedTime && <meta property="article:published_time" content={publishedTime} />}
+{modifiedTime && <meta property="article:modified_time" content={modifiedTime} />}
+
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:title" content={fullTitle} />
+<meta name="twitter:description" content={description} />
+<meta name="twitter:image" content={ogImage} />
+
+{allJsonLd.map((node) => (
+  <script is:inline type="application/ld+json" set:html={JSON.stringify(node)} />
+))}

@@ -1,0 +1,181 @@
+---
+import ContactConnect from "@/components/ContactConnect.astro";
+import ContactMap from "@/components/ContactMap.astro";
+import Icon from "@/components/Icon.astro";
+import { site } from "@/config/site";
+
+const emailDisplay = site.email;
+
+const subjectOptions = [
+  { value: "", label: "Select a subject" },
+  { value: "Job Opportunity", label: "Job Opportunity" },
+  { value: "Freelance", label: "Freelance" },
+  { value: "Collaboration", label: "Collaboration" },
+  { value: "Just saying hi!", label: "Just saying hi!" },
+] as const;
+---
+
+<section class="section" id="contact" data-animate>
+  <div class="container">
+    <div class="section-heading">
+      <div class="section-kicker">// 08. Contact</div>
+      <h2>Let&apos;s Build Something Together</h2>
+      <p>Open to software engineering roles, freelance builds, collaborations, and thoughtful technical conversations.</p>
+    </div>
+
+    <div class="contact-shell">
+      <div class="contact-sidebar">
+        <div class="contact-list">
+          <article class="contact-card glass">
+            <span class="icon-btn" aria-hidden="true"><Icon name="mail" /></span>
+            <div>
+              <strong>Email</strong>
+              <span>{emailDisplay}</span>
+            </div>
+            <button
+              class="icon-btn copy-email interactive"
+              type="button"
+              data-copy={emailDisplay}
+              aria-label="Copy email address"
+            >
+              <Icon name="copy" />
+            </button>
+          </article>
+
+          {site.socials.linkedin && (
+            <a class="contact-card glass interactive" href={site.socials.linkedin} rel="me noopener">
+              <span class="icon-btn" aria-hidden="true"><Icon name="linkedin" /></span>
+              <div>
+                <strong>LinkedIn</strong>
+                <span>{site.socials.linkedin.replace(/^https?:\/\//, "")}</span>
+              </div>
+            </a>
+          )}
+
+          {site.socials.github && (
+            <a class="contact-card glass interactive" href={site.socials.github} rel="me noopener">
+              <span class="icon-btn" aria-hidden="true"><Icon name="github" /></span>
+              <div>
+                <strong>GitHub</strong>
+                <span>{site.socials.github.replace(/^https?:\/\//, "")}</span>
+              </div>
+            </a>
+          )}
+
+          <article class="contact-card glass">
+            <span class="icon-btn" aria-hidden="true"><Icon name="map-pin" /></span>
+            <div>
+              <strong>Location</strong>
+              <span>{site.location} · {site.timeZoneLabel}</span>
+            </div>
+          </article>
+
+          <article class="contact-card glass">
+            <span class="icon-btn" aria-hidden="true"><span class="availability-dot"></span></span>
+            <div>
+              <strong>Available for opportunities</strong>
+              <span>Remote, hybrid, and relocation-friendly roles</span>
+            </div>
+          </article>
+        </div>
+
+        <ContactMap />
+      </div>
+
+      <div class="contact-column">
+        <div class="form-card glass">
+          <header class="contact-form-intro">
+            <h3 class="contact-form-intro-title">Send a message</h3>
+            <p class="contact-form-intro-text">
+              Fill in the form below and I will get back to you within 1-2 business days · {site.timeZoneLabel}
+            </p>
+          </header>
+
+          <form class="contact-form" id="contact-form" name="contact" novalidate>
+          <div class="form-row">
+            <div class="field">
+              <label for="name">Name</label>
+              <input
+                id="name"
+                name="name"
+                type="text"
+                autocomplete="name"
+                placeholder="Your name"
+                required
+              />
+              <span class="error" data-error-for="name"></span>
+            </div>
+            <div class="field">
+              <label for="email">Email</label>
+              <input
+                id="email"
+                name="email"
+                type="email"
+                autocomplete="email"
+                placeholder="you@example.com"
+                required
+              />
+              <span class="error" data-error-for="email"></span>
+            </div>
+          </div>
+          <div class="field">
+            <label id="subject-label" for="subject-trigger">Subject</label>
+            <div class="custom-select" data-custom-select>
+              <select id="subject" name="subject" class="custom-select-native" required tabindex="-1" aria-hidden="true">
+                {subjectOptions.map((option) => (
+                  <option value={option.value}>{option.label}</option>
+                ))}
+              </select>
+              <button
+                type="button"
+                class="custom-select-trigger"
+                id="subject-trigger"
+                aria-labelledby="subject-label"
+                aria-haspopup="listbox"
+                aria-expanded="false"
+                aria-controls="subject-listbox"
+              >
+                <span class="custom-select-value is-placeholder" data-custom-select-value>
+                  Select a subject
+                </span>
+              </button>
+              <ul class="custom-select-options" id="subject-listbox" role="listbox" aria-labelledby="subject-label" hidden>
+                {subjectOptions.map((option) => (
+                  <li
+                    class="custom-select-option"
+                    role="option"
+                    {...(option.value ? { "data-value": option.value } : { "data-placeholder": "true" })}
+                    aria-selected={option.value === "" ? "true" : "false"}
+                    tabindex="-1"
+                  >
+                    {option.label}
+                  </li>
+                ))}
+              </ul>
+            </div>
+            <span class="error" data-error-for="subject"></span>
+          </div>
+          <div class="field">
+            <label for="message">Message</label>
+            <textarea
+              id="message"
+              name="message"
+              placeholder="Tell me about the role, project, or idea you have in mind..."
+              required
+              minlength="12"
+            ></textarea>
+            <span class="error" data-error-for="message"></span>
+          </div>
+          <button class="btn btn-primary submit-btn interactive" type="submit" id="submit-btn">
+            <span class="spinner" aria-hidden="true"></span>
+            <Icon name="check" class="icon checkmark" />
+            <span class="submit-label">Send Message</span>
+          </button>
+          </form>
+        </div>
+
+        <ContactConnect />
+      </div>
+    </div>
+  </div>
+</section>

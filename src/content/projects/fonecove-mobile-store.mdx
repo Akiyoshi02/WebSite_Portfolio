@@ -1,0 +1,36 @@
+---
+title: "FoneCove Mobile Store"
+tagline: "Responsive frontend e-commerce platform for a mobile phone retailer."
+description: "A frontend-only e-commerce site for a mobile phone retailer: public storefront with filtering, search, product pages, and dark/light themes, plus an admin panel UI for products, categories, brands, reviews, announcements, contact messages, and staff roles."
+category: "web"
+stack: ["React", "TypeScript", "Vite", "Tailwind CSS", "React Router", "Headless UI"]
+year: 2025
+featured: true
+theme: ["#ff8a3c", "#ff4ecd"]
+links:
+  repo: "https://github.com/Tehan-Hewage/FoneCove_Mobile_Store"
+order: 30
+---
+
+## Context
+
+A pure-frontend retail surface designed to look and behave like a finished
+storefront before any backend exists. The goal was a tight, polished
+shopping experience with an equally serious admin console.
+
+## What's in it
+
+- **Storefront.** Product grid with faceted filters, search, product detail
+  pages, and a complete dark/light theme system.
+- **Admin panel.** UI for products, categories, brands, reviews,
+  announcements, contact messages, and staff roles.
+- **Typed end-to-end.** TypeScript throughout, strict mode, no `any`.
+
+## Decisions
+
+- **Headless UI over a heavyweight UI kit.** Stayed close to the design,
+  no fighting opinionated components.
+- **React Router with nested layouts.** Lets the admin panel share chrome
+  cleanly without re-rendering the shell on every navigation.
+- **Themeable via CSS variables.** Dark/light toggles flip a single
+  attribute, with no class-bombing in component trees.

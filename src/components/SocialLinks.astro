@@ -1,0 +1,72 @@
+---
+import Icon from "./Icon.astro";
+import { site } from "@/config/site";
+---
+
+<div class="social-row" aria-label="Social links">
+  {site.socials.github && (
+    <a
+      class="icon-btn tooltip interactive"
+      data-tooltip="GitHub"
+      href={site.socials.github}
+      aria-label="GitHub profile"
+      rel="me noopener"
+    >
+      <Icon name="github" />
+    </a>
+  )}
+  {site.socials.linkedin && (
+    <a
+      class="icon-btn tooltip interactive"
+      data-tooltip="LinkedIn"
+      href={site.socials.linkedin}
+      aria-label="LinkedIn profile"
+      rel="me noopener"
+    >
+      <Icon name="linkedin" />
+    </a>
+  )}
+  {site.socials.x && (
+    <a
+      class="icon-btn tooltip interactive"
+      data-tooltip="X"
+      href={site.socials.x}
+      aria-label="X profile"
+      rel="me noopener"
+    >
+      <Icon name="x" />
+    </a>
+  )}
+  {site.socials.instagram && (
+    <a
+      class="icon-btn tooltip interactive"
+      data-tooltip="Instagram"
+      href={site.socials.instagram}
+      aria-label="Instagram profile"
+      rel="me noopener"
+    >
+      <Icon name="instagram" />
+    </a>
+  )}
+  {site.socials.facebook && (
+    <a
+      class="icon-btn tooltip interactive"
+      data-tooltip="Facebook"
+      href={site.socials.facebook}
+      aria-label="Facebook profile"
+      rel="me noopener"
+    >
+      <Icon name="facebook" />
+    </a>
+  )}
+  {site.socials.email && (
+    <a
+      class="icon-btn tooltip interactive"
+      data-tooltip="Email"
+      href={site.socials.email}
+      aria-label={`Email ${site.name}`}
+    >
+      <Icon name="mail" />
+    </a>
+  )}
+</div>

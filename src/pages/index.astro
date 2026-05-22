@@ -1,0 +1,80 @@
+---
+import Base from "@/layouts/Base.astro";
+import Hero from "@/components/sections/Hero.astro";
+import About from "@/components/sections/About.astro";
+import Skills from "@/components/sections/Skills.astro";
+import Projects from "@/components/sections/Projects.astro";
+import Experience from "@/components/sections/Experience.astro";
+import Education from "@/components/sections/Education.astro";
+import Testimonials from "@/components/sections/Testimonials.astro";
+import Writing from "@/components/sections/Writing.astro";
+import Contact from "@/components/sections/Contact.astro";
+import { site } from "@/config/site";
+
+const personJsonLd = {
+  "@context": "https://schema.org",
+  "@type": "Person",
+  name: site.fullName ?? site.name,
+  alternateName: site.name,
+  url: site.url,
+  jobTitle: site.role,
+  email: site.email,
+  address: {
+    "@type": "PostalAddress",
+    addressLocality: "Ragama",
+    addressRegion: "Western Province",
+    addressCountry: "LK",
+  },
+  alumniOf: [
+    {
+      "@type": "EducationalOrganization",
+      name: "Thurstan College",
+      sameAs: "https://www.thurstan.lk/",
+    },
+    {
+      "@type": "EducationalOrganization",
+      name: "SLIIT City University",
+      sameAs: "https://city.sliit.lk/",
+    },
+    {
+      "@type": "EducationalOrganization",
+      name: "University of Bedfordshire",
+      sameAs: "https://www.beds.ac.uk/",
+    },
+  ],
+  worksFor: {
+    "@type": "Organization",
+    name: "Cynectex (Pvt) Ltd",
+    sameAs: "https://cynectex.com/",
+  },
+  sameAs: [
+    site.socials.github,
+    site.socials.linkedin,
+    site.socials.x,
+    site.socials.instagram,
+    site.socials.facebook,
+    site.socials.mastodon,
+    site.socials.youtube,
+  ].filter(Boolean),
+};
+
+const websiteJsonLd = {
+  "@context": "https://schema.org",
+  "@type": "WebSite",
+  name: site.name,
+  url: site.url,
+  inLanguage: site.locale,
+};
+---
+
+<Base jsonLd={[personJsonLd, websiteJsonLd]}>
+  <Hero />
+  <About />
+  <Skills />
+  <Projects />
+  <Experience />
+  <Education />
+  <Testimonials />
+  <Writing />
+  <Contact />
+</Base>

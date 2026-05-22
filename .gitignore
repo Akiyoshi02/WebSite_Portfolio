@@ -1,0 +1,36 @@
+# build output
+dist/
+.output/
+
+# dependencies
+node_modules/
+
+# logs
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# environment variables
+.env
+.env.production
+.env.local
+
+# macOS-specific files
+.DS_Store
+
+# Windows
+Thumbs.db
+
+# editors
+.vscode/
+.idea/
+
+# Astro
+.astro/
+
+# local browser automation artifacts
+.playwright-mcp/
+
+# commit message drafts (local only)
+.commit-msg-temp.txt

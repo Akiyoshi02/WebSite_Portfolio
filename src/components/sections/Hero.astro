@@ -1,0 +1,51 @@
+---
+import SocialLinks from "@/components/SocialLinks.astro";
+import { site } from "@/config/site";
+
+const initialTypedRole = site.typewriterRoles[0] ?? "Full-Stack Developer";
+const [heroFirstName, ...heroLastParts] = site.name.split(" ");
+const heroLastName = heroLastParts.join(" ");
+---
+
+<section class="hero" id="home" aria-label="Home">
+  <canvas class="hero-canvas" id="particle-canvas" aria-hidden="true"></canvas>
+  <div class="hero-content">
+    <div class="hero-label" style="--hero-i:0">
+      &lt; Hello World /&gt;<span class="boot-cursor" aria-hidden="true"></span>
+    </div>
+    <h1 class="hero-title gradient-text" style="--hero-i:1">
+      <span class="hero-title-part">{heroFirstName}</span>
+      <span class="hero-title-part">{heroLastName}</span>
+    </h1>
+    <div class="hero-role" style="--hero-i:2">
+      <span>{site.role}</span>
+      <span aria-hidden="true">·</span>
+      <span
+        class="typed-role"
+        id="typed-role"
+        data-typewriter-roles={JSON.stringify(site.typewriterRoles)}
+      >
+        {initialTypedRole}
+      </span>
+    </div>
+    <p class="hero-copy" style="--hero-i:3">
+      I build resilient web products, polished interfaces, and practical systems that make complex
+      work feel effortless.
+    </p>
+    {site.openToWork && (
+      <div class="availability" style="--hero-i:4">
+        <span class="availability-dot" aria-hidden="true"></span>Open to Work
+      </div>
+    )}
+    <div class="hero-actions" style="--hero-i:5">
+      <a class="btn btn-primary interactive" href="#projects">View My Work</a>
+      <a class="btn btn-secondary interactive" href="#contact">Let&apos;s Talk</a>
+    </div>
+    <div style="--hero-i:6">
+      <SocialLinks />
+    </div>
+  </div>
+  <a class="scroll-indicator interactive" href="#about" aria-label="Scroll to About">
+    <span></span>
+  </a>
+</section>

@@ -1,0 +1,80 @@
+---
+import { getGitHubActivity } from "@/data/githubContributions";
+import { techCategories } from "@/data/tech";
+import { site } from "@/config/site";
+
+const githubUsername = site.socials.github?.replace(/\/$/, "").split("/").pop() ?? "Akiyoshi02";
+const githubActivity = await getGitHubActivity(githubUsername);
+const getTechIconSrc = (icon: string, color: string) =>
+  icon.startsWith("/") || icon.startsWith("http")
+    ? icon
+    : `https://cdn.simpleicons.org/${icon}/${color.replace("#", "")}`;
+const getTechIconStyle = (name: string, icon: string) =>
+  name === "Whisper STT" && icon.startsWith("http")
+    ? "width: 40px; height: 40px; filter: brightness(0) saturate(100%) invert(59%) sepia(58%) saturate(490%) hue-rotate(122deg) brightness(92%) contrast(88%);"
+    : undefined;
+---
+
+<section class="section" id="skills" data-animate>
+  <div class="container skills-shell">
+    <div class="section-heading">
+      <div class="section-kicker">// 02. Skills</div>
+      <h2>Tools for building clean, scalable products.</h2>
+      <p>
+        From user interfaces to backend services and deployment pipelines, I work across the
+        stack with a practical engineering toolkit.
+      </p>
+    </div>
+
+    <div id="tech-categories">
+      {techCategories.map((category) => (
+        <section class="skill-category glass">
+          <h3>{category.title}</h3>
+          <div class="tech-grid">
+            {category.items.map(([name, icon, color, fallback]) => (
+              <article class="tech-card interactive" style={`--brand:${color}`}>
+                {icon ? (
+                  <img
+                    alt={`${name} logo`}
+                    src={getTechIconSrc(icon, color)}
+                    style={getTechIconStyle(name, icon)}
+                    loading="lazy"
+                    width="34"
+                    height="34"
+                  />
+                ) : (
+                  <span class="icon-fallback" aria-hidden="true">
+                    {fallback ?? name.slice(0, 2)}
+                  </span>
+                )}
+                <span>{name}</span>
+              </article>
+            ))}
+          </div>
+        </section>
+      ))}
+    </div>
+
+    <div class="skill-lower">
+      <div class="heatmap-panel glass" id="heatmap-panel">
+        <h3>Activity</h3>
+        <p>{githubActivity.summary}</p>
+        <div
+          class="heatmap-grid"
+          id="heatmap-grid"
+          aria-label={`GitHub contribution heatmap for ${githubUsername}`}
+          data-source={githubActivity.source}
+        >
+          {githubActivity.cells.map((cell, i) => (
+            <span
+              class="heat-cell"
+              style={`--i:${i};--level:${cell.level}`}
+              title={cell.title}
+              aria-label={cell.title}
+            />
+          ))}
+        </div>
+      </div>
+    </div>
+  </div>
+</section>

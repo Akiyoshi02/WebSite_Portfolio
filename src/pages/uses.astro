@@ -1,0 +1,71 @@
+---
+import Base from "@/layouts/Base.astro";
+
+const groups = [
+  {
+    title: "Editor",
+    items: [
+      ["VS Code", "Primary editor with extensions for TypeScript, Astro, and Git."],
+      ["JetBrains Mono", "Editor font, weights 400/500/700."],
+      ["GitHub Dark Default", "Color theme: easy on the eyes for long sessions."],
+    ],
+  },
+  {
+    title: "Terminal",
+    items: [
+      ["Windows Terminal", "Tabs, profiles, and decent rendering."],
+      ["PowerShell 7", "Default shell on Windows."],
+      ["Starship", "Cross-shell prompt with git status."],
+    ],
+  },
+  {
+    title: "Languages & Runtimes",
+    items: [
+      ["Node.js 22 LTS", "JavaScript / TypeScript runtime."],
+      ["Python 3.12", "Tooling, scripts, and backend utilities."],
+      ["Go 1.22+", "Small services and CLIs."],
+    ],
+  },
+  {
+    title: "Hardware",
+    items: [
+      ["27\" monitor", "1440p, the productivity sweet spot."],
+      ["Mechanical keyboard", "Brown switches."],
+      ["Wired mouse", "Latency over wireless."],
+    ],
+  },
+] as const;
+---
+
+<Base
+  title="Uses"
+  description="The tools, hardware, and setup I work with."
+  hidePreloader
+>
+  <section class="section">
+    <div class="container" style="max-width:780px;margin-inline:auto">
+      <div class="section-heading">
+        <div class="section-kicker">// Uses</div>
+        <h2>What I use</h2>
+        <p>
+          A snapshot of the tools, hardware, and setup that make up my daily working environment.
+          Inspired by <a href="https://uses.tech" style="color:var(--accent-1)">uses.tech</a>.
+        </p>
+      </div>
+
+      {groups.map((group) => (
+        <section style="margin-bottom:36px">
+          <h3 style="font-size:1.35rem;margin-bottom:16px">{group.title}</h3>
+          <div style="display:grid;gap:10px">
+            {group.items.map(([name, desc]) => (
+              <article class="glass" style="padding:16px;display:grid;grid-template-columns:minmax(160px,1fr) 2fr;gap:14px;align-items:center">
+                <strong>{name}</strong>
+                <span style="color:var(--text-muted)">{desc}</span>
+              </article>
+            ))}
+          </div>
+        </section>
+      ))}
+    </div>
+  </section>
+</Base>

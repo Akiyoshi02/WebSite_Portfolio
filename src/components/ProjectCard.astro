@@ -1,0 +1,130 @@
+---
+import Icon from "./Icon.astro";
+import type { CollectionEntry } from "astro:content";
+
+interface Props {
+  project: CollectionEntry<"projects">;
+}
+
+const { project } = Astro.props;
+const { data, id } = project;
+const slug = id.replace(/\.(md|mdx)$/, "");
+const safeKey = data.title.replace(/\W/g, "");
+const href = `/projects/${slug}`;
+---
+
+<article
+  class={`project-card glass ${data.wide ? "is-wide" : ""}`}
+  data-category={data.category}
+>
+  <div class="project-media">
+    {data.featured && <div class="ribbon">Featured</div>}
+
+    <svg
+      class="project-visual image-hover"
+      viewBox="0 0 760 420"
+      xmlns="http://www.w3.org/2000/svg"
+      role="img"
+      aria-label={`${data.title} project mockup`}
+    >
+      <defs>
+        <linearGradient id={`g-${safeKey}`} x1="0" y1="0" x2="1" y2="1">
+          <stop offset="0" stop-color={data.theme[0]} />
+          <stop offset="1" stop-color={data.theme[1]} />
+        </linearGradient>
+        <pattern id={`p-${safeKey}`} width="34" height="34" patternUnits="userSpaceOnUse">
+          <path d="M34 0H0v34" fill="none" stroke="white" stroke-opacity=".08" />
+        </pattern>
+      </defs>
+      <rect width="760" height="420" fill="#0d1117" />
+      <rect width="760" height="420" fill={`url(#g-${safeKey})`} opacity=".22" />
+      <rect width="760" height="420" fill={`url(#p-${safeKey})`} />
+      <rect
+        x="70"
+        y="70"
+        width="620"
+        height="280"
+        rx="18"
+        fill="rgba(255,255,255,.08)"
+        stroke="rgba(255,255,255,.18)"
+      />
+      <rect x="100" y="105" width="220" height="22" rx="8" fill="white" opacity=".75" />
+      <rect x="100" y="145" width="440" height="14" rx="7" fill="white" opacity=".25" />
+      <rect x="100" y="174" width="370" height="14" rx="7" fill="white" opacity=".16" />
+      <rect x="100" y="225" width="140" height="72" rx="14" fill={data.theme[0]} opacity=".76" />
+      <rect x="260" y="225" width="140" height="72" rx="14" fill={data.theme[1]} opacity=".72" />
+      <path
+        d="M445 292c39-100 82-128 146-84 24 17 43 25 71 15"
+        fill="none"
+        stroke={data.theme[0]}
+        stroke-width="8"
+        stroke-linecap="round"
+      />
+      <text
+        x="100"
+        y="330"
+        fill="white"
+        opacity=".82"
+        font-family="JetBrains Mono, monospace"
+        font-size="20"
+      >
+        {data.title}
+      </text>
+    </svg>
+
+    <div class="project-overlay">
+      <a class="btn btn-primary interactive" href={href} aria-label={`View ${data.title} case study`}>
+        Case Study
+      </a>
+      {data.links.live && (
+        <a
+          class="btn btn-secondary interactive"
+          href={data.links.live}
+          aria-label={`Open live ${data.title}`}
+          rel="noopener"
+        >
+          Live
+        </a>
+      )}
+      {data.links.repo && (
+        <a
+          class="btn btn-secondary interactive"
+          href={data.links.repo}
+          aria-label={`${data.title} source code`}
+          rel="noopener"
+        >
+          GitHub
+        </a>
+      )}
+    </div>
+  </div>
+
+  <div class="project-body">
+    <div class="project-title-row">
+      <h3><a href={href}>{data.title}</a></h3>
+      <div style="display:flex;gap:8px">
+        {data.links.live && (
+          <a class="icon-btn interactive" href={data.links.live} aria-label={`Open ${data.title}`} rel="noopener">
+            <Icon name="external" />
+          </a>
+        )}
+        {data.links.repo && (
+          <a class="icon-btn interactive" href={data.links.repo} aria-label={`${data.title} source code`} rel="noopener">
+            <Icon name="github" />
+          </a>
+        )}
+      </div>
+    </div>
+    <p class="project-desc">{data.description}</p>
+    <div class="tag-row">
+      {data.stack.map((tag) => (
+        <span class="tech-pill">{tag}</span>
+      ))}
+    </div>
+    <div class="project-stats">
+      {typeof data.stars === "number" && <span>★ {data.stars}</span>}
+      {typeof data.forks === "number" && <span>⑂ {data.forks}</span>}
+      <span>📅 {data.year}</span>
+    </div>
+  </div>
+</article>

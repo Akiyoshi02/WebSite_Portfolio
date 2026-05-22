@@ -1,0 +1,42 @@
+---
+import BaseHead from "@/components/BaseHead.astro";
+import Header from "@/components/Header.astro";
+import Footer from "@/components/Footer.astro";
+import Preloader from "@/components/Preloader.astro";
+import { site } from "@/config/site";
+
+type HeadProps = Parameters<typeof BaseHead>[0];
+
+interface Props extends HeadProps {
+  /** Hide the preloader for sub-pages where it would feel out of place. */
+  hidePreloader?: boolean;
+}
+
+const { hidePreloader = false, ...headProps } = Astro.props;
+---
+
+<!doctype html>
+<html lang={site.locale}>
+  <head>
+    <BaseHead {...headProps} />
+  </head>
+  <body>
+    <div class="scroll-progress" aria-hidden="true"></div>
+    <div class="cursor-dot" aria-hidden="true"></div>
+    <div class="cursor-ring" aria-hidden="true"></div>
+
+    {!hidePreloader && <Preloader />}
+
+    <Header />
+
+    <main id="main">
+      <slot />
+    </main>
+
+    <Footer />
+
+    <script>
+      import "@/scripts/site.ts";
+    </script>
+  </body>
+</html>

@@ -1,0 +1,63 @@
+---
+import Icon from "@/components/Icon.astro";
+import { testimonials } from "@/data/testimonials";
+---
+
+<section class="section" id="testimonials" data-animate>
+  <div class="container">
+    <div class="section-heading">
+      <div class="section-kicker">// 06. Recommendations</div>
+      <h2>What People Say</h2>
+    </div>
+
+    <div class="testimonial-shell glass" id="testimonial-shell">
+      <div class="testimonial-track" id="testimonial-track">
+        {testimonials.map((item) => (
+          <article class="testimonial-card">
+            <div>
+              <div class="quote-mark">“</div>
+              <p>{item.text}</p>
+            </div>
+            <div class="author-row">
+              <span class="avatar">{item.initials}</span>
+              <div>
+                <strong>{item.name}</strong>
+                <p style="line-height:1.35">{item.title} · {item.company}</p>
+                <div class="stars" aria-label="5 out of 5 stars">★★★★★</div>
+              </div>
+            </div>
+          </article>
+        ))}
+      </div>
+    </div>
+
+    <div class="carousel-controls">
+      <button
+        class="icon-btn interactive"
+        id="testimonial-prev"
+        type="button"
+        aria-label="Previous testimonial"
+      >
+        <Icon name="chevron-left" />
+      </button>
+      <div class="dots" id="testimonial-dots" aria-label="Testimonial position">
+        {testimonials.map((_, index) => (
+          <button
+            class={`dot interactive ${index === 0 ? "is-active" : ""}`}
+            type="button"
+            aria-label={`Show testimonial ${index + 1}`}
+            data-testimonial-dot={index}
+          />
+        ))}
+      </div>
+      <button
+        class="icon-btn interactive"
+        id="testimonial-next"
+        type="button"
+        aria-label="Next testimonial"
+      >
+        <Icon name="chevron-right" />
+      </button>
+    </div>
+  </div>
+</section>

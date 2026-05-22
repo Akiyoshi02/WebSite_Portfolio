@@ -1,0 +1,76 @@
+---
+import Icon from "./Icon.astro";
+import { site } from "@/config/site";
+
+const currentYear = new Date().getFullYear();
+const copyrightYears =
+  currentYear > site.startYear ? `${site.startYear}–${currentYear}` : `${site.startYear}`;
+---
+
+<footer class="site-footer">
+  <div class="container footer-grid">
+    <a class="logo interactive" href="/" aria-label={`${site.name} home`}>
+      <img class="logo-img" src="/logo.png" alt="" width="42" height="42" decoding="async" />
+    </a>
+    <p>Built with care, performance, and an unreasonable amount of polish.</p>
+
+    <nav class="footer-links" aria-label="Footer navigation">
+      <a class="interactive" href="/#about">About</a>
+      <a class="interactive" href="/#skills">Skills</a>
+      <a class="interactive" href="/#projects">Projects</a>
+      <a class="interactive" href="/#experience">Experience</a>
+      <a class="interactive" href="/#education">Education</a>
+      <a class="interactive" href="/#testimonials">Recommendations</a>
+      <a class="interactive" href="/blog">Writing</a>
+      <a class="interactive" href="/uses">Uses</a>
+      <a class="interactive" href="/now">Now</a>
+      <a class="interactive" href="/#contact">Contact</a>
+    </nav>
+
+    <div class="footer-socials">
+      {site.socials.github && (
+        <a class="icon-btn interactive" href={site.socials.github} aria-label="GitHub" rel="me noopener">
+          <Icon name="github" />
+        </a>
+      )}
+      {site.socials.linkedin && (
+        <a class="icon-btn interactive" href={site.socials.linkedin} aria-label="LinkedIn" rel="me noopener">
+          <Icon name="linkedin" />
+        </a>
+      )}
+      {site.socials.x && (
+        <a class="icon-btn interactive" href={site.socials.x} aria-label="X" rel="me noopener">
+          <Icon name="x" />
+        </a>
+      )}
+      {site.socials.instagram && (
+        <a class="icon-btn interactive" href={site.socials.instagram} aria-label="Instagram" rel="me noopener">
+          <Icon name="instagram" />
+        </a>
+      )}
+      {site.socials.facebook && (
+        <a class="icon-btn interactive" href={site.socials.facebook} aria-label="Facebook" rel="me noopener">
+          <Icon name="facebook" />
+        </a>
+      )}
+      {site.socials.email && (
+        <a class="icon-btn interactive" href={site.socials.email} aria-label="Email">
+          <Icon name="mail" />
+        </a>
+      )}
+    </div>
+
+    <p>© {copyrightYears} {site.name} · All rights reserved.</p>
+  </div>
+</footer>
+
+<button
+  class="icon-btn back-to-top interactive"
+  id="back-to-top"
+  type="button"
+  aria-label="Back to top"
+>
+  <Icon name="chevron-up" />
+</button>
+
+<div class="toast-region" id="toast-region" aria-live="polite" aria-atomic="true"></div>
