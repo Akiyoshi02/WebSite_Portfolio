@@ -4,6 +4,12 @@ import {
   buildContactEmailHtml,
   buildContactEmailText,
 } from "./contactEmailTemplate";
+import {
+  buildConfirmationEmailHtml,
+  buildConfirmationEmailSubject,
+  buildConfirmationEmailText,
+} from "./confirmationEmailTemplate";
+import { SITE_NAME } from "./emailTheme";
 
 const ALLOWED_SUBJECTS = new Set([
   "Job Opportunity",
@@ -108,21 +114,35 @@ export const handler: Handler = async (event: HandlerEvent, _context: HandlerCon
 
   const mailSubject = subject;
   const emailContent = { name, email, subject, message };
-  const text = buildContactEmailText(emailContent);
-  const html = buildContactEmailHtml(emailContent);
+  const ownerText = buildContactEmailText(emailContent);
+  const ownerHtml = buildContactEmailHtml(emailContent);
+  const fromAddress = `"${SITE_NAME}" <${smtp.from}>`;
 
   try {
     await transporter.sendMail({
-      from: smtp.from,
+      from: fromAddress,
       to: smtp.to,
       replyTo: email,
       subject: mailSubject,
-      text,
-      html,
+      text: ownerText,
+      html: ownerHtml,
     });
   } catch (err) {
-    console.error("SMTP send failed:", err);
+    console.error("Owner notification failed:", err);
     return jsonResponse(502, { error: "Could not send your message. Please try again later." });
+  }
+
+  try {
+    await transporter.sendMail({
+      from: fromAddress,
+      to: email,
+      replyTo: smtp.to,
+      subject: buildConfirmationEmailSubject(emailContent),
+      text: buildConfirmationEmailText(emailContent),
+      html: buildConfirmationEmailHtml(emailContent),
+    });
+  } catch (err) {
+    console.error("Confirmation email failed:", err);
   }
 
   return jsonResponse(200, { ok: "sent" });
