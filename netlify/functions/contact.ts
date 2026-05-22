@@ -1,5 +1,9 @@
 import type { Handler, HandlerEvent, HandlerContext } from "@netlify/functions";
 import nodemailer from "nodemailer";
+import {
+  buildContactEmailHtml,
+  buildContactEmailText,
+} from "./contactEmailTemplate";
 
 const ALLOWED_SUBJECTS = new Set([
   "Job Opportunity",
@@ -103,19 +107,9 @@ export const handler: Handler = async (event: HandlerEvent, _context: HandlerCon
   });
 
   const mailSubject = subject;
-  const text = [
-    `New message from your portfolio`,
-    ``,
-    `Name: ${name}`,
-    `Email: ${email}`,
-    `Subject: ${subject}`,
-    ``,
-    `Message:`,
-    message,
-    ``,
-    `---`,
-    `Sent via akiyoshiyapa.netlify.app`,
-  ].join("\n");
+  const emailContent = { name, email, subject, message };
+  const text = buildContactEmailText(emailContent);
+  const html = buildContactEmailHtml(emailContent);
 
   try {
     await transporter.sendMail({
@@ -124,6 +118,7 @@ export const handler: Handler = async (event: HandlerEvent, _context: HandlerCon
       replyTo: email,
       subject: mailSubject,
       text,
+      html,
     });
   } catch (err) {
     console.error("SMTP send failed:", err);
