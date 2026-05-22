@@ -102,7 +102,7 @@ export const handler: Handler = async (event: HandlerEvent, _context: HandlerCon
     },
   });
 
-  const mailSubject = `Portfolio contact: ${subject}`;
+  const mailSubject = subject;
   const text = [
     `New message from your portfolio`,
     ``,
