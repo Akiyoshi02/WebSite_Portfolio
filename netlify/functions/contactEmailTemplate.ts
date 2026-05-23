@@ -1,20 +1,24 @@
 import {
+  RESPONSE_TIME,
   SITE_NAME,
   SITE_TAGLINE,
-  escapeHtml,
-  formatMessageHtml,
-  resolveSiteUrl,
-  sectionHeading,
-  formIntro,
-  glassCard,
+  buttonOutline,
+  buttonPrimary,
   chip,
   chipRow,
-  formRowTwoCol,
-  fieldBlock,
-  messageArea,
-  contactCardRow,
-  buttonPrimary,
+  contactRow,
   emailFooter,
+  escapeHtml,
+  fieldBlock,
+  formRowTwoCol,
+  formatMessageHtml,
+  glassCard,
+  heroBlock,
+  messageArea,
+  resolveSiteUrl,
+  sectionHeading,
+  statGrid,
+  truncateText,
   wrapEmailDocument,
 } from "./emailTheme";
 
@@ -45,35 +49,66 @@ export function buildContactEmailText(input: ContactEmailInput): string {
 
 export function buildContactEmailHtml(input: ContactEmailInput): string {
   const site = resolveSiteUrl(input.siteUrl);
-  const mailto = `mailto:${encodeURIComponent(input.email)}`;
-  const nameHtml = escapeHtml(input.name);
-  const emailHtml = `<a href="${mailto}" style="color:#00f5d4;text-decoration:none;font-weight:600;">${escapeHtml(input.email)}</a>`;
+  const replyHref = `mailto:${encodeURIComponent(input.email)}?subject=${encodeURIComponent(
+    `Re: ${input.subject}`,
+  )}`;
+  const emailLink = `<a href="${replyHref}" style="color:#00f5d4;text-decoration:none;font-weight:800;">${escapeHtml(input.email)}</a>`;
 
   const body = `
-    ${sectionHeading("// 08. Contact", "New message", "A new submission from your portfolio contact form.")}
-    ${formIntro("Send a message", `Incoming enquiry · ${SITE_TAGLINE}`)}
-    ${chipRow([chip(input.subject, true)])}
-    ${glassCard(`
-      ${formRowTwoCol(
-        fieldBlock("Name", nameHtml),
-        fieldBlock("Email", emailHtml),
-      )}
-      ${messageArea("Message", formatMessageHtml(input.message))}
-    `, "28px")}
-    ${glassCard(`
-      ${contactCardRow({ icon: "✉", title: "Reply to sender", subtitle: input.email, href: mailto })}
-      ${contactCardRow({ icon: "◎", title: "Portfolio", subtitle: site.replace(/^https?:\/\//, ""), href: site })}
-    `, "16px")}
-    ${buttonPrimary(mailto, `Reply to ${input.name}`)}
-    ${emailFooter([
-      `Sent from the contact form on <a href="${site}" style="color:#00f5d4;text-decoration:none;font-weight:600;">${escapeHtml(SITE_NAME)}</a>`,
-      `<a href="${site}" style="color:#9aa4b2;text-decoration:underline;">${escapeHtml(site)}</a>`,
+    ${heroBlock({
+      kicker: "// Contact transmission",
+      title: "New portfolio message",
+      subtitle: `${input.name} reached out through the contact form. The message is ready to review and reply to.`,
+      status: "Reply path active",
+    })}
+
+    ${statGrid([
+      { value: "01", label: "New message" },
+      { value: "SMTP", label: "Delivered by" },
+      { value: "1-2d", label: "Reply target" },
     ])}
+
+    ${glassCard(`
+      ${sectionHeading(
+        "// Sender snapshot",
+        "Contact details",
+        `Incoming enquiry from ${SITE_TAGLINE}.`,
+      )}
+      ${chipRow([chip(input.subject, true), chip("Portfolio contact"), chip(RESPONSE_TIME)])}
+      ${formRowTwoCol(
+        fieldBlock("Name", escapeHtml(input.name)),
+        fieldBlock("Email", emailLink),
+      )}
+      ${fieldBlock("Message preview", escapeHtml(truncateText(input.message, 120)))}
+    `)}
+
+    ${messageArea("Full message", formatMessageHtml(input.message))}
+
+    ${glassCard(`
+      ${sectionHeading(
+        "// Next action",
+        "Reply without hunting for context",
+        "The reply-to header is also set to the sender, so replying from your inbox will target the right address.",
+      )}
+      ${contactRow({ icon: "@", title: "Reply to sender", value: input.email, href: replyHref })}
+      ${contactRow({ icon: "#", title: "Original subject", value: input.subject })}
+      ${contactRow({ icon: "/", title: "Portfolio source", value: site.replace(/^https?:\/\//, ""), href: site })}
+      ${buttonPrimary(replyHref, `Reply to ${input.name}`)}
+      ${buttonOutline(site, "Open portfolio")}
+    `, "24px", "0")}
+
+    ${emailFooter(
+      [
+        `Sent from the contact form on <span style="color:#c7ceda;font-weight:700;">${escapeHtml(SITE_NAME)}</span>.`,
+        "SMTP delivery succeeded for the owner notification before this email was marked as sent.",
+      ],
+      [{ label: "Portfolio", href: site }],
+    )}
   `;
 
   return wrapEmailDocument({
     title: input.subject,
-    preheader: `${input.name} wrote: ${input.subject}`,
+    preheader: `${input.name} wrote: ${truncateText(input.message, 90)}`,
     bodyHtml: body,
   });
 }

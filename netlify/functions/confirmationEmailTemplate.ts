@@ -1,23 +1,24 @@
 import {
+  RESPONSE_TIME,
   SITE_NAME,
   SITE_TAGLINE,
-  RESPONSE_TIME,
-  escapeHtml,
-  formatMessageHtml,
-  firstName,
-  truncateText,
-  resolveSiteUrl,
-  sectionHeading,
-  formIntro,
-  glassCard,
+  bodyCopy,
+  buttonOutline,
+  buttonPrimary,
   chip,
   chipRow,
-  availabilityPill,
-  monoKicker,
-  bodyCopy,
-  messageArea,
-  buttonOutline,
+  contactRow,
   emailFooter,
+  escapeHtml,
+  firstName,
+  formatMessageHtml,
+  glassCard,
+  heroBlock,
+  messageArea,
+  resolveSiteUrl,
+  sectionHeading,
+  statGrid,
+  truncateText,
   wrapEmailDocument,
 } from "./emailTheme";
 
@@ -30,7 +31,7 @@ export interface ConfirmationEmailInput {
 }
 
 export function buildConfirmationEmailSubject(_input: ConfirmationEmailInput): string {
-  return `Thanks for your message — ${SITE_NAME}`;
+  return `Thanks for your message - ${SITE_NAME}`;
 }
 
 export function buildConfirmationEmailText(input: ConfirmationEmailInput): string {
@@ -40,14 +41,14 @@ export function buildConfirmationEmailText(input: ConfirmationEmailInput): strin
   return [
     `Hi ${greeting},`,
     "",
-    `Thank you for reaching out through my portfolio. I've received your message and will get back to you within ${RESPONSE_TIME}.`,
+    `Thank you for reaching out through my portfolio. I received your message and will get back to you within ${RESPONSE_TIME}.`,
     "",
     `Subject: ${input.subject}`,
     "",
     "Your message:",
     truncateText(input.message, 500),
     "",
-    `If anything urgent comes up, you can reply to this email.`,
+    "If anything urgent comes up, you can reply to this email with more details.",
     "",
     `${SITE_NAME}`,
     site,
@@ -58,33 +59,67 @@ export function buildConfirmationEmailText(input: ConfirmationEmailInput): strin
 
 export function buildConfirmationEmailHtml(input: ConfirmationEmailInput): string {
   const site = resolveSiteUrl(input.siteUrl);
-  const greet = escapeHtml(firstName(input.name));
+  const greet = firstName(input.name);
 
   const body = `
-    ${sectionHeading(
-      "// 08. Contact",
-      "Let's Build Something Together",
-      "Open to software engineering roles, freelance builds, collaborations, and thoughtful technical conversations.",
-    )}
-    ${monoKicker("&lt; Message received /&gt;")}
-    ${bodyCopy(
-      `Hi <strong style="color:#e8eaf0;">${greet}</strong>, thank you for getting in touch. I've received your message and will reply within <strong style="color:#e8eaf0;">${RESPONSE_TIME}</strong>.`,
-    )}
-    ${availabilityPill("Message delivered · Open to reply")}
-    ${formIntro("Your submission", `A copy of what you sent · ${SITE_TAGLINE}`)}
-    ${chipRow([chip(input.subject, true)])}
-    ${glassCard(messageArea("Message", formatMessageHtml(truncateText(input.message, 420))), "28px")}
-    ${buttonOutline(site, "View portfolio")}
-    ${emailFooter([
-      `This is an automated confirmation sent to <span style="color:#c7ceda;">${escapeHtml(input.email)}</span>.`,
-      `If you need to add more detail, reply to this email.`,
-      `<a href="${site}" style="color:#9aa4b2;text-decoration:underline;">${escapeHtml(site)}</a>`,
+    ${heroBlock({
+      kicker: "// Message received",
+      title: `Thanks, ${greet}`,
+      subtitle: "Your message made it through the portfolio contact form and is now in my inbox.",
+      status: "Delivered successfully",
+    })}
+
+    ${statGrid([
+      { value: "OK", label: "Form status" },
+      { value: "1-2d", label: "Typical reply" },
+      { value: "SMTP", label: "Email route" },
     ])}
+
+    ${glassCard(`
+      ${sectionHeading(
+        "// What happens next",
+        "I will review this and reply directly",
+        `I usually respond within ${RESPONSE_TIME}. If the topic is urgent, reply to this email and add the extra context.`,
+      )}
+      ${chipRow([chip(input.subject, true), chip(SITE_TAGLINE), chip("Open to reply")])}
+      ${bodyCopy(
+        `Hi <strong style="color:#e8eaf0;">${escapeHtml(greet)}</strong>, thanks for starting the conversation. I have the contact details and message you submitted, so there is no need to send it again.`,
+      )}
+      ${contactRow({ icon: "1", title: "Message received", value: "Your form submission was accepted." })}
+      ${contactRow({ icon: "2", title: "Inbox notification", value: "A copy was sent to my portfolio inbox." })}
+      ${contactRow({ icon: "3", title: "Reply window", value: `I aim to respond within ${RESPONSE_TIME}.` })}
+    `)}
+
+    ${messageArea("Your submitted message", formatMessageHtml(truncateText(input.message, 520)))}
+
+    ${glassCard(`
+      ${sectionHeading(
+        "// Stay connected",
+        "Explore more while I review it",
+        "You can revisit the portfolio, project case studies, and current focus areas from the same site.",
+      )}
+      ${contactRow({ icon: "/", title: "Portfolio", value: site.replace(/^https?:\/\//, ""), href: site })}
+      ${contactRow({ icon: "@", title: "Confirmation sent to", value: input.email })}
+      ${buttonPrimary(site, "View portfolio")}
+      ${buttonOutline(`${site}/#projects`, "See projects")}
+    `, "24px", "0")}
+
+    ${emailFooter(
+      [
+        `This automated confirmation was sent to <span style="color:#c7ceda;font-weight:700;">${escapeHtml(input.email)}</span>.`,
+        "Reply to this email if you want to add more details to your original message.",
+      ],
+      [
+        { label: "Portfolio", href: site },
+        { label: "Projects", href: `${site}/#projects` },
+        { label: "Contact", href: `${site}/#contact` },
+      ],
+    )}
   `;
 
   return wrapEmailDocument({
     title: buildConfirmationEmailSubject(input),
-    preheader: `Thanks ${firstName(input.name)} — your message was received.`,
+    preheader: `Thanks ${greet} - your message was delivered to ${SITE_NAME}.`,
     bodyHtml: body,
   });
 }
