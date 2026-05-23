@@ -2880,6 +2880,35 @@ body.mobile-menu-open .scroll-progress {
   }
 }
 
+@media (max-width: 390px) and (max-height: 700px) {
+  .scroll-indicator {
+    bottom: max(6px, env(safe-area-inset-bottom));
+    width: 18px;
+    height: 28px;
+    padding-top: 5px;
+  }
+
+  .scroll-indicator span {
+    width: 3px;
+    height: 5px;
+    animation-name: scrollWheelCompact;
+  }
+}
+
+@keyframes scrollWheelCompact {
+  0% {
+    transform: translateY(0);
+    opacity: 0;
+  }
+  30% {
+    opacity: 1;
+  }
+  100% {
+    transform: translateY(9px);
+    opacity: 0;
+  }
+}
+
 @media (prefers-reduced-motion: reduce) {
   *,
   *::before,

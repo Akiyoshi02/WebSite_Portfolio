@@ -38,33 +38,6 @@ The live site is deployed on **Netlify**. Contact submissions are delivered by e
 
 ---
 
-## 📸 Screenshots
-
-_Add screenshots to `docs/screenshots/` (or GitHub release assets) and replace the placeholders below._
-
-### 🏠 Home — Hero  
-<!-- ![Hero](docs/screenshots/hero.png) -->
-
-### 👤 About & Skills  
-<!-- ![About and Skills](docs/screenshots/about-skills.png) -->
-
-### 📁 Projects  
-<!-- ![Projects](docs/screenshots/projects.png) -->
-
-### 📄 Project Case Study  
-<!-- ![Case Study](docs/screenshots/case-study.png) -->
-
-### ✍️ Writing  
-<!-- ![Blog](docs/screenshots/blog.png) -->
-
-### 📬 Contact  
-<!-- ![Contact](docs/screenshots/contact.png) -->
-
-### 🌓 Theme (Dark / Light)  
-<!-- ![Theme toggle](docs/screenshots/theme.png) -->
-
----
-
 ## 🛠️ Setup / Run
 
 ### Prerequisites

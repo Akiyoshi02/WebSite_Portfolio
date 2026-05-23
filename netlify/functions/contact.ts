@@ -1,4 +1,4 @@
-import type { Handler, HandlerEvent, HandlerContext } from "@netlify/functions";
+import type { Handler, HandlerEvent, HandlerContext, HandlerResponse } from "@netlify/functions";
 import nodemailer from "nodemailer";
 import {
   buildContactEmailHtml,
@@ -29,7 +29,7 @@ interface ContactPayload {
   company?: string;
 }
 
-function jsonResponse(statusCode: number, body: Record<string, string>): Handler.Response {
+function jsonResponse(statusCode: number, body: Record<string, string>): HandlerResponse {
   return {
     statusCode,
     headers: { "Content-Type": "application/json" },
