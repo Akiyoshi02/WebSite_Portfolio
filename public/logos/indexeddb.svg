@@ -1,6 +1,0 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" aria-hidden="true">
-  <path fill="#fff" stroke="#005A9C" stroke-width="10" stroke-linejoin="round" d="M5 20v60a45 15 0 1 0 90 0V20a45 15 0 1 0-90 0z"/>
-  <path fill="none" stroke="#005A9C" stroke-width="10" d="M5 20a45 15 0 1 0 90 0"/>
-  <path fill="none" stroke="#005A9C" stroke-width="10" d="M5 40a45 15 0 1 0 90 0"/>
-  <path fill="none" stroke="#005A9C" stroke-width="10" d="M5 60a45 15 0 1 0 90 0"/>
-</svg>

@@ -3,6 +3,7 @@ import BaseHead from "@/components/BaseHead.astro";
 import Header from "@/components/Header.astro";
 import Footer from "@/components/Footer.astro";
 import Preloader from "@/components/Preloader.astro";
+import PortfolioCli from "@/components/PortfolioCli.astro";
 import { site } from "@/config/site";
 
 type HeadProps = Parameters<typeof BaseHead>[0];
@@ -34,6 +35,8 @@ const { hidePreloader = false, ...headProps } = Astro.props;
     </main>
 
     <Footer />
+
+    <PortfolioCli />
 
     <script>
       import "@/scripts/site.ts";

@@ -1,0 +1,129 @@
+---
+import { getCollection } from "astro:content";
+import { site } from "@/config/site";
+import { techCategories } from "@/data/tech";
+import Icon from "@/components/Icon.astro";
+
+const allProjects = await getCollection("projects", ({ data }) => !data.draft);
+const sortedProjects = allProjects.sort((a, b) => {
+  const orderA = a.data.order ?? 1000;
+  const orderB = b.data.order ?? 1000;
+  if (orderA !== orderB) return orderA - orderB;
+  return b.data.year - a.data.year;
+});
+
+const aiKeywords = [
+  "ai-powered",
+  "ai-driven",
+  "artificial intelligence",
+  "ollama",
+  "whisper",
+  "rag",
+  "llm",
+  "openai",
+  "mediapipe",
+];
+
+const projects = sortedProjects.map((project) => {
+  const slug = project.id.replace(/\.(md|mdx)$/, "");
+  const searchable = [
+    project.data.title,
+    project.data.tagline,
+    project.data.description,
+    ...project.data.stack,
+  ].join(" ").toLowerCase();
+
+  return {
+    title: project.data.title,
+    tagline: project.data.tagline,
+    description: project.data.description,
+    category: project.data.category,
+    stack: project.data.stack,
+    year: project.data.year,
+    href: `/projects/${slug}`,
+    links: project.data.links,
+    isAi: aiKeywords.some((keyword) => searchable.includes(keyword)),
+  };
+});
+
+const cliData = {
+  site: {
+    name: site.name,
+    shortName: site.shortName,
+    role: site.role,
+    email: site.email,
+    location: site.location,
+    timeZoneLabel: site.timeZoneLabel,
+    cvPath: "/cv.pdf",
+    socials: site.socials,
+  },
+  projects,
+  stack: techCategories.map((category) => ({
+    title: category.title,
+    items: category.items.map(([name]) => name),
+  })),
+};
+
+const safeCliData = JSON.stringify(cliData).replace(/</g, "\\u003c");
+---
+
+<div
+  class="portfolio-cli"
+  id="portfolio-cli"
+  role="dialog"
+  aria-modal="true"
+  aria-labelledby="portfolio-cli-title"
+  aria-describedby="portfolio-cli-description"
+  aria-hidden="true"
+>
+  <button class="portfolio-cli-backdrop" type="button" data-cli-close aria-label="Close portfolio terminal"></button>
+
+  <section class="cli-window glass" aria-label="Portfolio terminal">
+    <header class="cli-titlebar">
+      <div class="cli-window-controls" aria-hidden="true">
+        <span></span>
+        <span></span>
+        <span></span>
+      </div>
+      <div>
+        <p class="cli-eyebrow">Interactive terminal</p>
+        <h2 id="portfolio-cli-title">Akiyoshi Portfolio CLI</h2>
+      </div>
+      <kbd class="cli-shortcut" title="Use the backtick key below Escape - not the apostrophe (') key.">Ctrl + `</kbd>
+      <button class="icon-btn cli-close interactive" type="button" data-cli-close aria-label="Close terminal">
+        <Icon name="close" />
+      </button>
+    </header>
+
+    <p class="sr-only" id="portfolio-cli-description">
+      Type portfolio commands such as help, projects --ai, why-hire-me, contact, stack, or download-cv. Open with Ctrl+backtick (key below Escape, not apostrophe).
+    </p>
+
+    <div class="cli-output" id="portfolio-cli-output" role="log" aria-live="polite" aria-relevant="additions"></div>
+
+    <form class="cli-input-row" id="portfolio-cli-form" autocomplete="off">
+      <span class="cli-prompt" aria-hidden="true">akiyoshi@portfolio:~$</span>
+      <label class="sr-only" for="portfolio-cli-input">Portfolio terminal command</label>
+      <input
+        id="portfolio-cli-input"
+        name="command"
+        type="text"
+        inputmode="text"
+        spellcheck="false"
+        autocomplete="off"
+        placeholder="Type help and press Enter"
+      />
+    </form>
+
+    <footer class="cli-suggestions" aria-label="Suggested terminal commands">
+      <button class="cli-chip interactive" type="button" data-cli-run="help">help</button>
+      <button class="cli-chip interactive" type="button" data-cli-run="projects --ai">projects --ai</button>
+      <button class="cli-chip interactive" type="button" data-cli-run="why-hire-me">why-hire-me</button>
+      <button class="cli-chip interactive" type="button" data-cli-run="contact">contact</button>
+      <button class="cli-chip interactive" type="button" data-cli-run="stack">stack</button>
+      <button class="cli-chip interactive" type="button" data-cli-run="download-cv">download-cv</button>
+    </footer>
+  </section>
+
+  <script is:inline type="application/json" id="portfolio-cli-data" set:html={safeCliData}></script>
+</div>

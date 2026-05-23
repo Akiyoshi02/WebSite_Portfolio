@@ -10,6 +10,40 @@ const prefersReducedMotion = (): boolean =>
 
 const root = document.documentElement;
 
+interface PortfolioCliProject {
+  title: string;
+  tagline?: string;
+  description: string;
+  category: string;
+  stack: string[];
+  year: number;
+  href: string;
+  links: {
+    live?: string;
+    repo?: string;
+    caseStudy?: string;
+  };
+  isAi: boolean;
+}
+
+interface PortfolioCliData {
+  site: {
+    name: string;
+    shortName: string;
+    role: string;
+    email: string;
+    location: string;
+    timeZoneLabel: string;
+    cvPath: string;
+    socials: Record<string, string | null>;
+  };
+  projects: PortfolioCliProject[];
+  stack: Array<{
+    title: string;
+    items: string[];
+  }>;
+}
+
 function showToast(message: string): void {
   const region = document.getElementById("toast-region");
   if (!region) return;
@@ -33,7 +67,7 @@ function setupPreloader(): void {
   document.body.classList.add("no-scroll");
   const lines = [
     "> initializing portfolio.exe...",
-    "> loading modules: [██████████] 100%",
+    "> loading modules: [##########] 100%",
     "> compiling dreams...",
     "> launching site",
   ];
@@ -346,6 +380,13 @@ function setupTestimonials(): void {
 }
 
 let formAbort: AbortController | null = null;
+let cliAbort: AbortController | null = null;
+let typewriterCleanup: (() => void) | null = null;
+
+document.addEventListener("astro:before-swap", () => {
+  typewriterCleanup?.();
+  typewriterCleanup = null;
+});
 
 /** SMTP contact handler (Netlify Function). Also aliased as /api/contact in netlify.toml. */
 const CONTACT_ENDPOINT = "/api/contact";
@@ -627,10 +668,516 @@ function setupCopy(): void {
   });
 }
 
+function setupPortfolioCli(): void {
+  cliAbort?.abort();
+  cliAbort = new AbortController();
+  const { signal } = cliAbort;
+
+  const shell = document.getElementById("portfolio-cli");
+  const output = document.getElementById("portfolio-cli-output");
+  const form = document.getElementById("portfolio-cli-form") as HTMLFormElement | null;
+  const input = document.getElementById("portfolio-cli-input") as HTMLInputElement | null;
+  const data = getPortfolioCliData();
+
+  if (!shell || !output || !form || !input || !data) return;
+  const cliShell = shell;
+  const cliOutput = output;
+  const cliForm = form;
+  const cliInput = input;
+  const cliData = data;
+
+  const commandNames = [
+    "help",
+    "projects --ai",
+    "why-hire-me",
+    "contact",
+    "stack",
+    "download-cv",
+    "clear",
+    "exit",
+  ];
+  const prompt = `${cliData.site.shortName.toLowerCase()}@portfolio:~$`;
+  let isOpen = false;
+  let hasWelcomed = false;
+  let previousFocus: HTMLElement | null = null;
+  const history: string[] = [];
+  let historyIndex = 0;
+
+  function scrollOutput(): void {
+    cliOutput.scrollTop = cliOutput.scrollHeight;
+  }
+
+  function syncOpenButtons(open: boolean): void {
+    document.querySelectorAll<HTMLElement>("[data-cli-open]").forEach((button) => {
+      button.setAttribute("aria-expanded", String(open));
+    });
+  }
+
+  function closeMobileMenuIfOpen(): void {
+    const menu = document.getElementById("mobile-menu");
+    const toggle = document.getElementById("menu-toggle");
+    if (!menu?.classList.contains("is-open")) return;
+    menu.classList.remove("is-open");
+    menu.setAttribute("aria-hidden", "true");
+    toggle?.setAttribute("aria-expanded", "false");
+    toggle?.setAttribute("aria-label", "Open navigation menu");
+    document.body.classList.remove("mobile-menu-open", "no-scroll");
+    root.classList.remove("no-scroll");
+  }
+
+  function openTerminal(prefill = ""): void {
+    closeMobileMenuIfOpen();
+    previousFocus = document.activeElement instanceof HTMLElement ? document.activeElement : null;
+    isOpen = true;
+    cliShell.classList.add("is-open");
+    cliShell.setAttribute("aria-hidden", "false");
+    root.classList.add("no-scroll");
+    document.body.classList.add("no-scroll");
+    syncOpenButtons(true);
+    if (!hasWelcomed) {
+      appendWelcome();
+      hasWelcomed = true;
+    }
+    cliInput.value = prefill;
+    window.setTimeout(() => cliInput.focus(), 0);
+  }
+
+  function closeTerminal(): void {
+    if (!isOpen) return;
+    isOpen = false;
+    cliShell.classList.remove("is-open");
+    cliShell.setAttribute("aria-hidden", "true");
+    root.classList.remove("no-scroll");
+    document.body.classList.remove("no-scroll");
+    syncOpenButtons(false);
+    previousFocus?.focus();
+  }
+
+  function createEntry(kind: string): HTMLDivElement {
+    const entry = document.createElement("div");
+    entry.className = `cli-entry cli-entry-${kind}`;
+    cliOutput.appendChild(entry);
+    return entry;
+  }
+
+  function appendText(parent: HTMLElement, text: string, className = "cli-text"): HTMLParagraphElement {
+    const line = document.createElement("p");
+    line.className = className;
+    line.textContent = text;
+    parent.appendChild(line);
+    return line;
+  }
+
+  function appendCommand(command: string): void {
+    const entry = createEntry("command");
+    const promptEl = document.createElement("span");
+    promptEl.className = "cli-command-prompt";
+    promptEl.textContent = prompt;
+    const commandEl = document.createElement("span");
+    commandEl.className = "cli-command-value";
+    commandEl.textContent = command;
+    entry.append(promptEl, commandEl);
+  }
+
+  function createAction(label: string, onClick: () => void): HTMLButtonElement {
+    const button = document.createElement("button");
+    button.className = "cli-action interactive";
+    button.type = "button";
+    button.textContent = label;
+    button.addEventListener("click", onClick, { signal });
+    return button;
+  }
+
+  function createLink(label: string, href: string): HTMLAnchorElement {
+    const link = document.createElement("a");
+    link.className = "cli-action interactive";
+    link.href = href;
+    link.textContent = label;
+    if (href.startsWith("http")) {
+      link.rel = "noopener";
+      link.target = "_blank";
+    }
+    return link;
+  }
+
+  function appendActions(parent: HTMLElement, actions: Array<HTMLElement>): void {
+    const row = document.createElement("div");
+    row.className = "cli-actions";
+    actions.forEach((action) => row.appendChild(action));
+    parent.appendChild(row);
+  }
+
+  function appendList(parent: HTMLElement, items: string[]): void {
+    const list = document.createElement("ul");
+    list.className = "cli-list";
+    items.forEach((item) => {
+      const li = document.createElement("li");
+      li.textContent = item;
+      list.appendChild(li);
+    });
+    parent.appendChild(list);
+  }
+
+  function appendCommandGrid(parent: HTMLElement): void {
+    const grid = document.createElement("div");
+    grid.className = "cli-command-grid";
+    const commands = [
+      ["help", "Show available commands."],
+      ["projects --ai", "Open AI-related project proof."],
+      ["why-hire-me", "Summarize the strongest hiring signals."],
+      ["contact", "Show email, GitHub, LinkedIn, and contact form actions."],
+      ["stack", "List the main technologies behind the portfolio and projects."],
+      ["download-cv", "Download the current CV PDF."],
+      ["clear", "Clear the terminal output."],
+      ["exit", "Close the terminal."],
+    ];
+
+    commands.forEach(([command, description]) => {
+      const button = document.createElement("button");
+      button.className = "cli-command-card interactive";
+      button.type = "button";
+      button.addEventListener(
+        "click",
+        () => {
+          cliInput.value = command;
+          executeCommand(command);
+          cliInput.value = "";
+          cliInput.focus();
+        },
+        { signal },
+      );
+
+      const name = document.createElement("strong");
+      name.textContent = command;
+      const copy = document.createElement("span");
+      copy.textContent = description;
+      button.append(name, copy);
+      grid.appendChild(button);
+    });
+
+    parent.appendChild(grid);
+  }
+
+  function appendWelcome(): void {
+    const entry = createEntry("system");
+    appendText(entry, `Welcome to ${cliData.site.name}'s portfolio terminal.`);
+    appendText(entry, "Type help to see the command list, or run one of the suggested commands below.");
+    scrollOutput();
+  }
+
+  function runHelp(): void {
+    const entry = createEntry("result");
+    appendText(entry, "Available commands:");
+    appendCommandGrid(entry);
+  }
+
+  function runAiProjects(): void {
+    const aiProjects = cliData.projects.filter((project) => project.isAi);
+    const entry = createEntry("result");
+
+    if (!aiProjects.length) {
+      appendText(entry, "No AI-tagged projects were found in the portfolio content yet.");
+      appendText(entry, "Tip: add AI-related tags or wording to a project case study to surface it here.");
+      return;
+    }
+
+    appendText(entry, "AI-related project proof:");
+    aiProjects.forEach((project) => {
+      const card = document.createElement("article");
+      card.className = "cli-project-card";
+
+      const title = document.createElement("h3");
+      title.textContent = `${project.title} (${project.year})`;
+      const description = document.createElement("p");
+      description.textContent = project.description;
+      const stack = document.createElement("p");
+      stack.className = "cli-muted";
+      stack.textContent = `Stack: ${project.stack.slice(0, 8).join(", ")}`;
+
+      card.append(title, description, stack);
+
+      const actions = [createLink("Case study", project.href)];
+      if (project.links.repo) actions.push(createLink("Source", project.links.repo));
+      if (project.links.live) actions.push(createLink("Live", project.links.live));
+      appendActions(card, actions);
+      entry.appendChild(card);
+    });
+  }
+
+  function runWhyHireMe(): void {
+    const entry = createEntry("result");
+    appendText(entry, "Why hire Akiyoshi:");
+    appendList(entry, [
+      "He ships complete products, not only static UI screens.",
+      "He can work across frontend, backend, deployment, email, auth, and data flows.",
+      "InterviewAI Pro shows real AI product thinking with speech, local LLMs, dashboards, and role-based workflows.",
+      "This portfolio itself is production-minded: Astro, MDX content, SEO, RSS, Netlify Functions, and validated SMTP contact.",
+      "As a recent graduate, he brings current tooling, strong learning speed, and proof that he finishes ambitious projects.",
+    ]);
+    const actions: HTMLElement[] = [
+      createAction("View projects", () => openHash("#projects")),
+      createAction("Contact", () => openHash("#contact")),
+    ];
+    if (cliData.site.socials.github) {
+      actions.push(createLink("Open GitHub", cliData.site.socials.github));
+    }
+    appendActions(entry, actions);
+  }
+
+  function runContact(): void {
+    const entry = createEntry("result");
+    appendText(entry, "Contact routes:");
+    appendList(entry, [
+      `Email: ${cliData.site.email}`,
+      `Location: ${cliData.site.location} ${cliData.site.timeZoneLabel}`,
+      "Best for: full-time roles, freelance builds, collaborations, and technical conversations.",
+    ]);
+
+    const actions: HTMLElement[] = [
+      createLink("Email", `mailto:${cliData.site.email}`),
+      createAction("Copy email", () => copyText(cliData.site.email, "Email copied to clipboard")),
+      createAction("Open contact form", () => openHash("#contact")),
+    ];
+    if (cliData.site.socials.github) {
+      actions.push(createLink("GitHub", cliData.site.socials.github));
+    }
+    if (cliData.site.socials.linkedin) {
+      actions.push(createLink("LinkedIn", cliData.site.socials.linkedin));
+    }
+    appendActions(entry, actions);
+  }
+
+  function runStack(): void {
+    const entry = createEntry("result");
+    appendText(entry, "Current stack map:");
+
+    const grid = document.createElement("div");
+    grid.className = "cli-stack-grid";
+    cliData.stack.forEach((group) => {
+      const section = document.createElement("section");
+      section.className = "cli-stack-group";
+      const title = document.createElement("h3");
+      title.textContent = group.title;
+      const items = document.createElement("p");
+      items.textContent = group.items.join(", ");
+      section.append(title, items);
+      grid.appendChild(section);
+    });
+    entry.appendChild(grid);
+  }
+
+  function runDownloadCv(): void {
+    const entry = createEntry("result");
+    appendText(entry, "Preparing CV download...");
+
+    const anchor = document.createElement("a");
+    anchor.href = cliData.site.cvPath;
+    anchor.download = "Akiyoshi-Yapa-CV.pdf";
+    document.body.appendChild(anchor);
+    anchor.click();
+    anchor.remove();
+
+    appendActions(entry, [createLink("Open CV", cliData.site.cvPath)]);
+    showToast("CV download started.");
+  }
+
+  function runUnknown(command: string): void {
+    const entry = createEntry("error");
+    appendText(entry, `Command not found: ${command}`);
+    appendText(entry, "Type help to see the supported commands.");
+  }
+
+  function executeCommand(rawCommand: string): void {
+    const command = rawCommand.trim();
+    if (!command) return;
+
+    appendCommand(command);
+    if (history[history.length - 1] !== command) {
+      history.push(command);
+    }
+    historyIndex = history.length;
+
+    const normalized = command.toLowerCase();
+
+    if (normalized === "help") runHelp();
+    else if (normalized === "projects --ai") runAiProjects();
+    else if (normalized === "projects") {
+      const entry = createEntry("result");
+      appendText(entry, "Try projects --ai for the strongest AI-related project proof.");
+      appendActions(entry, [createLink("View all projects", "/#projects")]);
+    } else if (normalized === "why-hire-me") runWhyHireMe();
+    else if (normalized === "contact") runContact();
+    else if (normalized === "stack") runStack();
+    else if (normalized === "download-cv") runDownloadCv();
+    else if (normalized === "clear") {
+      cliOutput.replaceChildren();
+      appendWelcome();
+    } else if (normalized === "exit" || normalized === "close") {
+      closeTerminal();
+    } else runUnknown(command);
+
+    scrollOutput();
+  }
+
+  function openHash(hash: string): void {
+    closeTerminal();
+    if (window.location.pathname !== "/") {
+      window.location.href = `/${hash}`;
+      return;
+    }
+    document.querySelector(hash)?.scrollIntoView({ behavior: "smooth", block: "start" });
+  }
+
+  async function copyText(text: string, successMessage: string): Promise<void> {
+    try {
+      await navigator.clipboard.writeText(text);
+      showToast(successMessage);
+    } catch {
+      showToast(text);
+    }
+  }
+
+  function autocompleteCommand(): void {
+    const value = cliInput.value.trim().toLowerCase();
+    if (!value) return;
+    const matches = commandNames.filter((command) => command.startsWith(value));
+    if (matches.length === 1) {
+      cliInput.value = matches[0];
+    }
+  }
+
+  function focusableInShell(): HTMLElement[] {
+    return Array.from(
+      cliShell.querySelectorAll<HTMLElement>(
+        'a[href], button:not([disabled]), input:not([disabled]), [tabindex]:not([tabindex="-1"])',
+      ),
+    ).filter((element) => element.offsetParent !== null);
+  }
+
+  function trapFocus(event: KeyboardEvent): void {
+    if (event.key !== "Tab" || !isOpen) return;
+    if (document.activeElement === cliInput && cliInput.value.trim() && !event.shiftKey) {
+      event.preventDefault();
+      autocompleteCommand();
+      return;
+    }
+
+    const focusable = focusableInShell();
+    if (!focusable.length) return;
+    const first = focusable[0];
+    const last = focusable[focusable.length - 1];
+
+    if (event.shiftKey && document.activeElement === first) {
+      event.preventDefault();
+      last.focus();
+    } else if (!event.shiftKey && document.activeElement === last) {
+      event.preventDefault();
+      first.focus();
+    }
+  }
+
+  document.querySelectorAll<HTMLButtonElement>("[data-cli-open]").forEach((button) => {
+    button.addEventListener(
+      "click",
+      (event) => {
+        event.preventDefault();
+        openTerminal();
+      },
+      { signal },
+    );
+  });
+
+  document.querySelectorAll<HTMLButtonElement>("[data-cli-close]").forEach((button) => {
+    button.addEventListener("click", closeTerminal, { signal });
+  });
+
+  document.querySelectorAll<HTMLButtonElement>("[data-cli-run]").forEach((button) => {
+    button.addEventListener(
+      "click",
+      () => {
+        const command = button.dataset.cliRun ?? "";
+        openTerminal(command);
+        executeCommand(command);
+        cliInput.value = "";
+      },
+      { signal },
+    );
+  });
+
+  cliForm.addEventListener(
+    "submit",
+    (event) => {
+      event.preventDefault();
+      const command = cliInput.value;
+      cliInput.value = "";
+      executeCommand(command);
+    },
+    { signal },
+  );
+
+  cliInput.addEventListener(
+    "keydown",
+    (event) => {
+      if (event.key === "ArrowUp") {
+        event.preventDefault();
+        if (!history.length) return;
+        historyIndex = Math.max(0, historyIndex - 1);
+        cliInput.value = history[historyIndex] ?? "";
+        cliInput.setSelectionRange(cliInput.value.length, cliInput.value.length);
+      } else if (event.key === "ArrowDown") {
+        event.preventDefault();
+        if (!history.length) return;
+        historyIndex = Math.min(history.length, historyIndex + 1);
+        cliInput.value = history[historyIndex] ?? "";
+        cliInput.setSelectionRange(cliInput.value.length, cliInput.value.length);
+      }
+    },
+    { signal },
+  );
+
+  cliShell.addEventListener("keydown", trapFocus, { signal });
+
+  const isCliShortcut = (event: KeyboardEvent): boolean => {
+    if (!(event.ctrlKey || event.metaKey) || event.altKey) return false;
+    // Backtick (`), not apostrophe ('). Prefer physical key codes - layouts vary.
+    if (event.code === "Backquote" || event.code === "IntlBackslash") return true;
+    return event.key === "`" || event.key === "~";
+  };
+
+  window.addEventListener(
+    "keydown",
+    (event) => {
+      if (isCliShortcut(event)) {
+        event.preventDefault();
+        if (isOpen) cliInput.focus();
+        else openTerminal();
+      } else if (event.key === "Escape" && isOpen) {
+        closeTerminal();
+      }
+    },
+    { capture: true, signal },
+  );
+}
+
+function getPortfolioCliData(): PortfolioCliData | null {
+  const dataEl = document.getElementById("portfolio-cli-data");
+  if (!dataEl?.textContent) return null;
+
+  try {
+    return JSON.parse(dataEl.textContent) as PortfolioCliData;
+  } catch {
+    return null;
+  }
+}
+
 function setupTypewriter(): void {
+  typewriterCleanup?.();
+  typewriterCleanup = null;
+
   if (prefersReducedMotion()) return;
   const el = document.getElementById("typed-role");
   if (!el) return;
+  const typedRole = el;
 
   let roles: string[] = ["Full-Stack Developer", "Problem Solver"];
   const raw = el.dataset.typewriterRoles;
@@ -649,38 +1196,68 @@ function setupTypewriter(): void {
   let charIndex = roles[0].length;
   let deleting = true;
   let timer: number | undefined;
+  let paused = false;
+
+  const clearTimer = (): void => {
+    if (timer !== undefined) {
+      window.clearTimeout(timer);
+      timer = undefined;
+    }
+  };
+
+  const schedule = (delay: number): void => {
+    clearTimer();
+    timer = window.setTimeout(tick, delay);
+  };
 
   function tick(): void {
-    const role = roles[roleIndex];
-    const visibleChars = Math.max(0, charIndex);
-    el!.textContent = role.slice(0, visibleChars);
+    if (paused) return;
+
+    const role = roles[roleIndex] ?? "";
+
     if (deleting) {
-      charIndex--;
-      if (charIndex < 0) {
+      charIndex = Math.max(0, charIndex - 1);
+      typedRole.textContent = role.slice(0, charIndex);
+      if (charIndex === 0) {
         deleting = false;
         roleIndex = (roleIndex + 1) % roles.length;
-        charIndex = 0;
-        el!.textContent = "";
-      }
-    } else {
-      charIndex++;
-      if (charIndex > roles[roleIndex].length) {
-        deleting = true;
-        timer = window.setTimeout(tick, 1200);
+        schedule(280);
         return;
       }
+      schedule(45);
+      return;
     }
-    timer = window.setTimeout(tick, deleting ? 45 : 72);
-  }
-  timer = window.setTimeout(tick, 1400);
 
-  document.addEventListener(
-    "astro:before-swap",
-    () => {
-      if (timer) window.clearTimeout(timer);
-    },
-    { once: true },
-  );
+    const nextRole = roles[roleIndex] ?? "";
+    const nextMax = nextRole.length;
+    charIndex = Math.min(nextMax, charIndex + 1);
+    typedRole.textContent = nextRole.slice(0, charIndex);
+    if (charIndex >= nextMax) {
+      deleting = true;
+      schedule(1200);
+      return;
+    }
+    schedule(72);
+  }
+
+  const onVisibilityChange = (): void => {
+    if (document.hidden) {
+      paused = true;
+      clearTimer();
+      return;
+    }
+    paused = false;
+    schedule(deleting ? 45 : 72);
+  };
+
+  document.addEventListener("visibilitychange", onVisibilityChange);
+  typewriterCleanup = () => {
+    paused = true;
+    clearTimer();
+    document.removeEventListener("visibilitychange", onVisibilityChange);
+  };
+
+  schedule(1400);
 }
 
 function setupPointer(): void {
@@ -713,14 +1290,19 @@ function setupPointer(): void {
   }
   animate();
 
+  function shouldShowClickCursor(target: Element | null): boolean {
+    if (!target?.closest(".interactive")) return false;
+    return !target.closest(".site-header .icon-btn, .site-header .btn");
+  }
+
   function onOver(event: MouseEvent): void {
     const target = event.target as Element | null;
-    if (target?.closest(".interactive")) ring!.classList.add("is-click");
+    if (shouldShowClickCursor(target)) ring!.classList.add("is-click");
     if (target?.closest(".image-hover, .project-media")) ring!.classList.add("is-view");
   }
   function onOut(event: MouseEvent): void {
     const target = event.target as Element | null;
-    if (target?.closest(".interactive")) ring!.classList.remove("is-click");
+    if (shouldShowClickCursor(target)) ring!.classList.remove("is-click");
     if (target?.closest(".image-hover, .project-media")) ring!.classList.remove("is-view");
   }
   document.addEventListener("mouseover", onOver);
@@ -875,6 +1457,7 @@ function bootAll(): void {
   setupForm();
   setupCustomSelects();
   setupCopy();
+  setupPortfolioCli();
   setupTypewriter();
   setupPointer();
   setupKonami();

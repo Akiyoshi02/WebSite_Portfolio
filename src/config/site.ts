@@ -14,7 +14,7 @@ export const site = {
   role: "Software Engineer",
   /** Longer headline used for OG cards and the SEO description fallback */
   tagline: "Software Engineer & Full-Stack Developer",
-  /** 1–2 sentence description used as the default meta description */
+  /** 1-2 sentence description used as the default meta description */
   description:
     "Portfolio of Akiyoshi Yapa, a software engineering undergraduate and full-stack developer building practical, AI-powered web products from Sri Lanka.",
   /** City, Country */
@@ -34,7 +34,16 @@ export const site = {
   /** Currently open to opportunities; toggles the hero availability pill */
   openToWork: true,
   /** Roles cycled in the hero typewriter */
-  typewriterRoles: ["Full-Stack Developer", "AI Enthusiast", "Problem Solver"] as readonly string[],
+  typewriterRoles: [
+    "Full-Stack Developer",
+    "AI Enthusiast",
+    "Web Developer",
+    "Backend Developer",
+    "Problem Solver",
+    "Tech Enthusiast",
+    "UI/UX Focused",
+    "Open to Opportunities",
+  ] as readonly string[],
   /** Shown in the contact panel under "Focus lately" */
   focusLately: [
     "Agentic AI",

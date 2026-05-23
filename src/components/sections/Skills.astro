@@ -9,6 +9,15 @@ const getTechIconSrc = (icon: string, color: string) =>
   icon.startsWith("/") || icon.startsWith("http")
     ? icon
     : `https://cdn.simpleicons.org/${icon}/${color.replace("#", "")}`;
+
+const getTechIconClass = (icon: string, color: string): string | undefined => {
+  if (icon.startsWith("http") && !icon.includes("cdn.simpleicons.org")) return undefined;
+  const hex = color.toLowerCase();
+  if (hex === "#ffffff" || hex === "#fff") return "tech-icon-fix-light";
+  if (hex === "#000000" || hex === "#000") return "tech-icon-fix-dark";
+  return undefined;
+};
+
 const getTechIconStyle = (name: string, icon: string) =>
   name === "Whisper STT" && icon.startsWith("http")
     ? "width: 40px; height: 40px; filter: brightness(0) saturate(100%) invert(59%) sepia(58%) saturate(490%) hue-rotate(122deg) brightness(92%) contrast(88%);"
@@ -36,9 +45,12 @@ const getTechIconStyle = (name: string, icon: string) =>
                 {icon ? (
                   <img
                     alt={`${name} logo`}
+                    class={getTechIconClass(icon, color)}
                     src={getTechIconSrc(icon, color)}
                     style={getTechIconStyle(name, icon)}
                     loading="lazy"
+                    decoding="async"
+                    referrerpolicy="no-referrer"
                     width="34"
                     height="34"
                   />

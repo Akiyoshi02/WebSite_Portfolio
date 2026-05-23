@@ -21,7 +21,8 @@ type IconName =
   | "close"
   | "copy"
   | "check"
-  | "map-pin";
+  | "map-pin"
+  | "terminal";
 
 interface Props {
   name: IconName;
@@ -134,5 +135,11 @@ const ariaHidden = decorative ? "true" : undefined;
   <svg class={className} viewBox="0 0 24 24" fill="none" aria-hidden={ariaHidden}>
     <path d="M12 22s7-6.1 7-13A7 7 0 1 0 5 9c0 6.9 7 13 7 13Z" stroke="currentColor" stroke-width="2" />
     <circle cx="12" cy="9" r="2.5" stroke="currentColor" stroke-width="2" />
+  </svg>
+)}
+{name === "terminal" && (
+  <svg class={className} viewBox="0 0 24 24" fill="none" aria-hidden={ariaHidden}>
+    <path d="m4 7 5 5-5 5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+    <path d="M11 17h9" stroke="currentColor" stroke-width="2" stroke-linecap="round" />
   </svg>
 )}

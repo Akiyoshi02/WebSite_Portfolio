@@ -25,6 +25,16 @@ import { site } from "@/config/site";
         <Icon name="moon" class="icon moon" />
         <Icon name="sun" class="icon sun" />
       </button>
+      <button
+        class="icon-btn cli-toggle interactive"
+        type="button"
+        data-cli-open
+        aria-label="Open portfolio terminal"
+        aria-controls="portfolio-cli"
+        aria-expanded="false"
+      >
+        <Icon name="terminal" />
+      </button>
       <a
         class="btn btn-outline desktop-cv interactive"
         href="/cv.pdf"
@@ -53,6 +63,9 @@ import { site } from "@/config/site";
       {site.nav.map((item) => (
         <a class="interactive" href={item.href}>{item.label}</a>
       ))}
+      <button class="btn btn-outline interactive" type="button" data-cli-open>
+        Open Terminal
+      </button>
       <a class="btn btn-outline interactive" href="/cv.pdf" download>
         Download CV
       </a>
