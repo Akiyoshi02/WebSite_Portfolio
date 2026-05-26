@@ -7,7 +7,6 @@ A production-ready portfolio for **Akiyoshi Yapa**, built with **Astro**, **Type
 The live site is deployed on **Netlify**. Contact submissions are delivered by email through a **Netlify Function** and your **SMTP** provider (no third-party form branding).
 
 [![Live on Netlify](https://img.shields.io/badge/Live%20Site-Netlify-00C7B7?style=for-the-badge&logo=netlify&logoColor=white)](https://akiyoshiyapa.netlify.app)
-[![Repository](https://img.shields.io/badge/Source-GitHub-181717?style=for-the-badge&logo=github)](https://github.com/Akiyoshi02/WebSite_Portfolio)
 
 ---
 
