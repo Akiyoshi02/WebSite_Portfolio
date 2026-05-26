@@ -1149,7 +1149,8 @@ function setupPortfolioCli(): void {
     (event) => {
       if (isCliShortcut(event)) {
         event.preventDefault();
-        if (isOpen) cliInput.focus();
+        if (event.repeat) return;
+        if (isOpen) closeTerminal();
         else openTerminal();
       } else if (event.key === "Escape" && isOpen) {
         closeTerminal();
