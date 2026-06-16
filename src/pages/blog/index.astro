@@ -1,10 +1,8 @@
 ---
-import { getCollection } from "astro:content";
 import Base from "@/layouts/Base.astro";
+import { getBlogPosts } from "@/lib/content";
 
-const posts = (await getCollection("posts", ({ data }) => !data.draft)).sort(
-  (a, b) => b.data.pubDate.getTime() - a.data.pubDate.getTime(),
-);
+const posts = await getBlogPosts();
 
 function formatDate(date: Date) {
   return new Intl.DateTimeFormat("en-US", {
@@ -32,28 +30,34 @@ function formatDate(date: Date) {
         <p>No posts yet. Check back soon.</p>
       ) : (
         <div style="display:grid;gap:14px">
-          {posts.map((post) => {
-            const slug = post.id.replace(/\.(md|mdx)$/, "");
-            return (
-              <a
-                class="blog-card glass interactive"
-                href={`/blog/${slug}`}
-                style="grid-template-columns:1fr;min-height:0"
-              >
-                <div>
-                  {post.data.tags[0] && (
-                    <span class="category-badge">{post.data.tags[0]}</span>
-                  )}
-                  <h3 style="margin-top:16px">{post.data.title}</h3>
-                  <p style="margin-top:12px">{post.data.description}</p>
-                </div>
-                <div class="project-title-row">
-                  <span class="section-kicker">{formatDate(post.data.pubDate)}</span>
-                  <span class="interactive">Read more →</span>
-                </div>
-              </a>
-            );
-          })}
+          {posts.map((post) => (
+            <a
+              class="blog-card glass interactive"
+              href={`/blog/${post.slug}`}
+              style="grid-template-columns:1fr;min-height:0"
+            >
+              <div>
+                {post.cover_url && (
+                  <img
+                    class="blog-card-cover"
+                    src={post.cover_url}
+                    alt={post.cover_alt ?? `${post.title} cover image`}
+                    loading="lazy"
+                    decoding="async"
+                  />
+                )}
+                {post.tags[0] && (
+                  <span class="category-badge">{post.tags[0]}</span>
+                )}
+                <h3 style="margin-top:16px">{post.title}</h3>
+                <p style="margin-top:12px">{post.description}</p>
+              </div>
+              <div class="project-title-row">
+                <span class="section-kicker">{formatDate(new Date(post.pub_date))}</span>
+                <span class="interactive">Read more</span>
+              </div>
+            </a>
+          ))}
         </div>
       )}
     </div>

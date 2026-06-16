@@ -1,9 +1,8 @@
 ---
-import { getCollection } from "astro:content";
+import { getWorkExperience } from "@/lib/content";
+import { renderMarkdown } from "@/lib/markdown";
 
-const work = (await getCollection("work")).sort(
-  (a, b) => b.data.order - a.data.order,
-);
+const work = await getWorkExperience();
 ---
 
 <section class="section" id="experience" data-animate>
@@ -18,29 +17,48 @@ const work = (await getCollection("work")).sort(
     </div>
 
     <div class="timeline" id="timeline">
-      {work.map((entry) => (
-        <article class="timeline-item">
-          <span class="timeline-dot" aria-hidden="true"></span>
-          <div class="timeline-card glass">
-            <div class="company-row">
-              <span class="company-logo">{entry.data.logo}</span>
-              <span>{entry.data.company}</span>
+      {work.map((entry) => {
+        const bodyHtml = renderMarkdown(entry.body);
+        const logoSrc = entry.logo_url?.trim() || "/images/company-placeholder.svg";
+        const hasCustomLogo = Boolean(entry.logo_url?.trim());
+        return (
+          <article class="timeline-item">
+            <span class="timeline-dot" aria-hidden="true"></span>
+            <div class="timeline-card glass">
+              <div class="company-row">
+                <span class="company-logo">
+                  <img
+                    src={logoSrc}
+                    alt={hasCustomLogo ? `${entry.company} logo` : "Company logo placeholder"}
+                    loading="lazy"
+                    decoding="async"
+                    referrerpolicy="no-referrer"
+                    class:list={[!hasCustomLogo && "is-placeholder"]}
+                  />
+                </span>
+                {entry.url ? (
+                  <a class="interactive" href={entry.url} rel="noopener">{entry.company}</a>
+                ) : (
+                  <span>{entry.company}</span>
+                )}
+              </div>
+              <h3>{entry.title}</h3>
+              <span class="date-badge">{entry.date_range}</span>
+              <ul>
+                {entry.bullets.map((b) => (
+                  <li>{b}</li>
+                ))}
+              </ul>
+              <div class="tag-row">
+                {entry.tags.map((tag) => (
+                  <span class="tag">{tag}</span>
+                ))}
+              </div>
+              {entry.body && <div class="timeline-body prose" set:html={bodyHtml} />}
             </div>
-            <h3>{entry.data.title}</h3>
-            <span class="date-badge">{entry.data.date}</span>
-            <ul>
-              {entry.data.bullets.map((b) => (
-                <li>{b}</li>
-              ))}
-            </ul>
-            <div class="tag-row">
-              {entry.data.tags.map((tag) => (
-                <span class="tag">{tag}</span>
-              ))}
-            </div>
-          </div>
-        </article>
-      ))}
+          </article>
+        );
+      })}
     </div>
   </div>
 </section>

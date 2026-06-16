@@ -1,5 +1,5 @@
 ---
-import { site } from "@/config/site";
+import { getSiteConfig } from "@/config/site";
 
 interface Props {
   /** Page-specific title; appended with the site name unless `titleOverride` is true. */
@@ -21,6 +21,8 @@ interface Props {
   jsonLd?: Record<string, unknown> | Record<string, unknown>[];
 }
 
+const site = await getSiteConfig();
+
 const {
   title,
   titleOverride = false,
@@ -41,13 +43,11 @@ const fullTitle = title
     : `${title} | ${site.name}`
   : `${site.name} | ${site.tagline}`;
 
-// Default OG image: an inline SVG data URI that matches the visual identity.
-// Replace with a real PNG/JPG in /public/og when you have one.
-const defaultOg =
-  "data:image/svg+xml," +
-  encodeURIComponent(
-    `<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1200 630'><defs><linearGradient id='g' x1='0' y1='0' x2='1' y2='1'><stop offset='0' stop-color='#00f5d4'/><stop offset='.5' stop-color='#7b2fff'/><stop offset='1' stop-color='#ff4ecd'/></linearGradient></defs><rect width='1200' height='630' fill='#050810'/><text x='90' y='250' fill='url(%23g)' font-family='Arial' font-size='44' font-weight='700'>&lt; AY /&gt;</text><text x='90' y='350' fill='#e8eaf0' font-family='Arial' font-size='92' font-weight='700'>${site.name}</text><text x='95' y='425' fill='#9aa4b2' font-family='Arial' font-size='34'>${site.tagline}</text></svg>`,
-  );
+// Default OG image: a static file served from /public/og.svg
+// (Previously a SVG data URI — social crawlers like LinkedIn & Facebook do not
+//  process data: URIs, so the card preview was always blank.)
+// For maximum compat, export this SVG to a 1200x630 PNG and replace /public/og.svg with it.
+const defaultOg = new URL("/og.svg", site.url).toString();
 
 const ogImage = image
   ? new URL(image, site.url).toString()

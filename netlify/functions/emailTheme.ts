@@ -21,8 +21,8 @@ export const COLORS = {
   glowPink: "rgba(255, 78, 205, 0.14)",
 } as const;
 
-export const SITE_NAME = "Akiyoshi Yapa";
-export const SITE_TAGLINE = "Software Engineer & Full-Stack Developer";
+export const SITE_NAME = process.env.SITE_NAME?.trim() || "Akiyoshi Yapa";
+export const SITE_TAGLINE = process.env.SITE_TAGLINE?.trim() || "Software Engineer & Full-Stack Developer";
 export const RESPONSE_TIME = "1-2 business days";
 
 const FONT_LINK =
@@ -87,6 +87,10 @@ function gradientRule(height = 4): string {
 }
 
 function brandWordmark(): string {
+  const [first, ...rest] = SITE_NAME.trim().split(/\s+/);
+  const firstPart = first || SITE_NAME;
+  const restPart = rest.join(" ");
+
   return `
     <table role="presentation" width="100%" cellspacing="0" cellpadding="0" border="0">
       <tr>
@@ -95,7 +99,7 @@ function brandWordmark(): string {
             &lt; ${escapeHtml(SITE_NAME)} /&gt;
           </p>
           <p style="margin:0;font-family:${FONT_DISPLAY};font-size:30px;font-weight:800;line-height:0.95;letter-spacing:-0.03em;">
-            <span style="color:${COLORS.accent1};">Akiyoshi</span><span style="color:${COLORS.textPrimary};"> </span><span style="color:${COLORS.accent2};">Yapa</span>
+            <span style="color:${COLORS.accent1};">${escapeHtml(firstPart)}</span>${restPart ? `<span style="color:${COLORS.textPrimary};"> </span><span style="color:${COLORS.accent2};">${escapeHtml(restPart)}</span>` : ""}
           </p>
         </td>
       </tr>

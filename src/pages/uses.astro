@@ -1,40 +1,8 @@
 ---
 import Base from "@/layouts/Base.astro";
+import { getUsesGroups } from "@/lib/content";
 
-const groups = [
-  {
-    title: "Editor",
-    items: [
-      ["VS Code", "Primary editor with extensions for TypeScript, Astro, and Git."],
-      ["JetBrains Mono", "Editor font, weights 400/500/700."],
-      ["GitHub Dark Default", "Color theme: easy on the eyes for long sessions."],
-    ],
-  },
-  {
-    title: "Terminal",
-    items: [
-      ["Windows Terminal", "Tabs, profiles, and decent rendering."],
-      ["PowerShell 7", "Default shell on Windows."],
-      ["Starship", "Cross-shell prompt with git status."],
-    ],
-  },
-  {
-    title: "Languages & Runtimes",
-    items: [
-      ["Node.js 22 LTS", "JavaScript / TypeScript runtime."],
-      ["Python 3.12", "Tooling, scripts, and backend utilities."],
-      ["Go 1.22+", "Small services and CLIs."],
-    ],
-  },
-  {
-    title: "Hardware",
-    items: [
-      ["27\" monitor", "1440p, the productivity sweet spot."],
-      ["Mechanical keyboard", "Brown switches."],
-      ["Wired mouse", "Latency over wireless."],
-    ],
-  },
-] as const;
+const groups = await getUsesGroups();
 ---
 
 <Base
@@ -57,10 +25,10 @@ const groups = [
         <section style="margin-bottom:36px">
           <h3 style="font-size:1.35rem;margin-bottom:16px">{group.title}</h3>
           <div style="display:grid;gap:10px">
-            {group.items.map(([name, desc]) => (
+            {group.uses_items.map((item) => (
               <article class="glass" style="padding:16px;display:grid;grid-template-columns:minmax(160px,1fr) 2fr;gap:14px;align-items:center">
-                <strong>{name}</strong>
-                <span style="color:var(--text-muted)">{desc}</span>
+                <strong>{item.name}</strong>
+                <span style="color:var(--text-muted)">{item.description}</span>
               </article>
             ))}
           </div>

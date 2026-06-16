@@ -1,20 +1,21 @@
 ---
-import { getCollection, render } from "astro:content";
 import type { GetStaticPaths } from "astro";
 import CaseStudy from "@/layouts/CaseStudy.astro";
+import { getProjects } from "@/lib/content";
+import { renderMarkdown } from "@/lib/markdown";
 
 export const getStaticPaths = (async () => {
-  const projects = await getCollection("projects", ({ data }) => !data.draft);
+  const projects = await getProjects();
   return projects.map((project) => ({
-    params: { slug: project.id.replace(/\.(md|mdx)$/, "") },
+    params: { slug: project.slug },
     props: { project },
   }));
 }) satisfies GetStaticPaths;
 
 const { project } = Astro.props;
-const { Content } = await render(project);
+const html = renderMarkdown(project.body);
 ---
 
 <CaseStudy project={project}>
-  <Content />
+  <Fragment set:html={html} />
 </CaseStudy>

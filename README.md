@@ -69,6 +69,9 @@ cp .env.example .env
 |----------|----------|---------|
 | `SITE_URL` | Recommended | Canonical URL for sitemap, RSS, and Open Graph (e.g. `https://akiyoshiyapa.netlify.app`) |
 | `GH_TOKEN` | Optional | Live GitHub contribution data during `npm run build` |
+| `PUBLIC_SUPABASE_URL` | Yes for CMS/admin | Supabase project URL |
+| `PUBLIC_SUPABASE_ANON_KEY` | Yes for CMS/admin | Supabase anonymous key |
+| `PUBLIC_ADMIN_EMAILS` | Yes for admin | Comma-separated emails allowed through the admin UI check |
 
 **SMTP variables** (server-side only — set in Netlify, not prefixed with `PUBLIC_`):
 
@@ -90,7 +93,11 @@ Do **not** commit `.env`.
 npm run dev
 ```
 
-Open the URL shown in the terminal (typically `http://localhost:4321`).
+Open the URL shown in the terminal (typically `http://localhost:3000`).
+
+For admin password recovery, add the local and production reset URLs to Supabase Auth redirect URLs, for example `http://localhost:3000/admin-panel/reset-password` and `https://your-site.example/admin-panel/reset-password`. Recovery links that land on the site root are forwarded to `/admin-panel/reset-password`.
+
+Admin write access is enforced by Supabase RLS, not just the browser UI. Apply the latest SQL in `supabase/`, then keep `public.admin_users` limited to trusted admin email addresses.
 
 ### 5. Production build & preview
 

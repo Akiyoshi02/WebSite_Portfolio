@@ -1,11 +1,7 @@
 ---
-import { getCollection } from "astro:content";
+import { getBlogPosts } from "@/lib/content";
 
-const allPosts = (await getCollection("posts", ({ data }) => !data.draft)).sort(
-  (a, b) => b.data.pubDate.getTime() - a.data.pubDate.getTime(),
-);
-
-const latest = allPosts.slice(0, 3);
+const latest = (await getBlogPosts()).slice(0, 3);
 
 function formatDate(date: Date) {
   return new Intl.DateTimeFormat("en-US", {
@@ -17,7 +13,8 @@ function formatDate(date: Date) {
 
 function readingTime(text: string) {
   const words = text.split(/\s+/).filter(Boolean).length;
-  return Math.max(1, Math.round(words / 220));
+  // 238 wpm is closer to average adult reading speed (was 220)
+  return Math.max(1, Math.round(words / 238));
 }
 ---
 
@@ -31,22 +28,30 @@ function readingTime(text: string) {
 
     <div class="blog-grid">
       {latest.map((post) => {
-        const slug = post.id.replace(/\.(md|mdx)$/, "");
-        const minutes = readingTime(post.body ?? "");
+        const minutes = readingTime(post.body);
         return (
           <article class="blog-card glass">
             <div>
-              {post.data.tags[0] && <span class="category-badge">{post.data.tags[0]}</span>}
+              {post.cover_url && (
+                <img
+                  class="blog-card-cover"
+                  src={post.cover_url}
+                  alt={post.cover_alt ?? `${post.title} cover image`}
+                  loading="lazy"
+                  decoding="async"
+                />
+              )}
+              {post.tags[0] && <span class="category-badge">{post.tags[0]}</span>}
               <h3 style="margin-top:16px">
-                <a href={`/blog/${slug}`}>{post.data.title}</a>
+                <a href={`/blog/${post.slug}`}>{post.title}</a>
               </h3>
-              <p style="margin-top:12px">{post.data.description}</p>
+              <p style="margin-top:12px">{post.description}</p>
             </div>
             <div class="project-title-row">
               <span class="section-kicker">
-                {minutes} min · {formatDate(post.data.pubDate)}
+                {minutes} min / {formatDate(new Date(post.pub_date))}
               </span>
-              <a class="interactive" href={`/blog/${slug}`}>Read More →</a>
+              <a class="interactive" href={`/blog/${post.slug}`}>Read More</a>
             </div>
           </article>
         );
@@ -54,7 +59,7 @@ function readingTime(text: string) {
     </div>
 
     <div style="margin-top:26px">
-      <a class="btn btn-secondary interactive" href="/blog">View All Posts →</a>
+      <a class="btn btn-secondary interactive" href="/blog">View All Posts</a>
     </div>
   </div>
 </section>

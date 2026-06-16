@@ -1,0 +1,91 @@
+<svg width="840" height="1050" viewBox="0 0 840 1050" fill="none" xmlns="http://www.w3.org/2000/svg" role="img" aria-labelledby="profileTitle profileDesc">
+  <title id="profileTitle">Profile image placeholder</title>
+  <desc id="profileDesc">A modern neutral profile placeholder used when no portrait image is set.</desc>
+
+  <defs>
+    <linearGradient id="profileRingGradient" x1="190" y1="300" x2="650" y2="760" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#00f5d4"/>
+      <stop offset="0.52" stop-color="#7b2fff"/>
+      <stop offset="1" stop-color="#ff4ecd"/>
+    </linearGradient>
+
+    <radialGradient id="profileGlow" cx="0" cy="0" r="1" gradientUnits="userSpaceOnUse" gradientTransform="translate(420 510) rotate(90) scale(360 320)">
+      <stop offset="0" stop-color="#00f5d4" stop-opacity="0.16"/>
+      <stop offset="0.42" stop-color="#7b2fff" stop-opacity="0.10"/>
+      <stop offset="1" stop-color="#0d1117" stop-opacity="0"/>
+    </radialGradient>
+
+    <filter id="profileSoftGlow" x="-40%" y="-40%" width="180%" height="180%">
+      <feGaussianBlur stdDeviation="8" result="blur"/>
+      <feMerge>
+        <feMergeNode in="blur"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+  </defs>
+
+  <rect width="840" height="1050" rx="52" fill="#0d1117"/>
+  <rect x="1.5" y="1.5" width="837" height="1047" rx="52" stroke="#FFFFFF" stroke-opacity="0.08" stroke-width="3"/>
+
+  <rect x="70" y="72" width="700" height="906" rx="44" fill="#0d1117" stroke="#9aa4b2" stroke-opacity="0.24" stroke-width="2"/>
+  <rect x="96" y="100" width="648" height="850" rx="34" fill="url(#profileGlow)" opacity="0.9"/>
+
+  <path d="M112 132H166" stroke="#00f5d4" stroke-width="6" stroke-linecap="round"/>
+  <path d="M112 132V186" stroke="#00f5d4" stroke-width="6" stroke-linecap="round"/>
+  <path d="M728 132H674" stroke="#ff4ecd" stroke-width="6" stroke-linecap="round"/>
+  <path d="M728 132V186" stroke="#ff4ecd" stroke-width="6" stroke-linecap="round"/>
+  <path d="M112 918H166" stroke="#ff4ecd" stroke-width="6" stroke-linecap="round"/>
+  <path d="M112 918V864" stroke="#ff4ecd" stroke-width="6" stroke-linecap="round"/>
+  <path d="M728 918H674" stroke="#00f5d4" stroke-width="6" stroke-linecap="round"/>
+  <path d="M728 918V864" stroke="#00f5d4" stroke-width="6" stroke-linecap="round"/>
+
+  <circle cx="392" cy="142" r="8" fill="#00f5d4"/>
+  <circle cx="420" cy="142" r="8" fill="#7b2fff"/>
+  <circle cx="448" cy="142" r="8" fill="#ff4ecd"/>
+
+  <path d="M185 665C230 515 367 400 540 378C641 365 705 393 727 454C759 545 632 661 472 713C310 766 145 760 119 698C111 679 144 631 185 665Z"
+        stroke="#7b2fff" stroke-opacity="0.45" stroke-width="4" stroke-linecap="round"/>
+
+  <circle cx="420" cy="520" r="300" stroke="#9aa4b2" stroke-opacity="0.42" stroke-width="4" stroke-dasharray="2 12"/>
+  <circle cx="420" cy="520" r="242" fill="#0d1117" stroke="#9aa4b2" stroke-opacity="0.26" stroke-width="3"/>
+
+  <path d="M420 224C270 224 148 346 148 496C148 646 270 768 420 768"
+        stroke="#00f5d4" stroke-width="8" stroke-linecap="round" filter="url(#profileSoftGlow)"/>
+  <path d="M420 224C570 224 692 346 692 496C692 646 570 768 420 768"
+        stroke="#ff4ecd" stroke-width="8" stroke-linecap="round" filter="url(#profileSoftGlow)"/>
+
+  <circle cx="420" cy="496" r="194" fill="#0d1117" stroke="#9aa4b2" stroke-opacity="0.32" stroke-width="4"/>
+
+  <circle cx="420" cy="428" r="72" fill="#c7ceda"/>
+  <path d="M276 654C298 574 354 532 420 532C486 532 542 574 564 654C573 686 548 716 515 716H325C292 716 267 686 276 654Z" fill="#c7ceda"/>
+
+  <circle cx="657" cy="322" r="18" fill="#00f5d4"/>
+  <circle cx="657" cy="322" r="31" stroke="#00f5d4" stroke-opacity="0.72" stroke-width="3"/>
+  <circle cx="184" cy="700" r="18" fill="#ff4ecd"/>
+  <circle cx="184" cy="700" r="31" stroke="#ff4ecd" stroke-opacity="0.72" stroke-width="3"/>
+
+  <g opacity="0.34">
+    <circle cx="182" cy="300" r="7" fill="#7b2fff"/>
+    <circle cx="212" cy="300" r="7" fill="#7b2fff"/>
+    <circle cx="242" cy="300" r="7" fill="#7b2fff"/>
+    <circle cx="272" cy="300" r="7" fill="#7b2fff"/>
+    <circle cx="182" cy="330" r="7" fill="#7b2fff"/>
+    <circle cx="212" cy="330" r="7" fill="#7b2fff"/>
+    <circle cx="242" cy="330" r="7" fill="#7b2fff"/>
+    <circle cx="272" cy="330" r="7" fill="#7b2fff"/>
+    <circle cx="182" cy="360" r="7" fill="#7b2fff"/>
+    <circle cx="212" cy="360" r="7" fill="#7b2fff"/>
+    <circle cx="242" cy="360" r="7" fill="#7b2fff"/>
+    <circle cx="272" cy="360" r="7" fill="#7b2fff"/>
+  </g>
+
+  <path d="M646 707L700 800H592L646 707Z" fill="#7b2fff" fill-opacity="0.12" stroke="#7b2fff" stroke-opacity="0.34" stroke-width="3" stroke-linejoin="round"/>
+
+  <path d="M320 846H400" stroke="#9aa4b2" stroke-opacity="0.5" stroke-width="2" stroke-linecap="round"/>
+  <path d="M440 846H520" stroke="#9aa4b2" stroke-opacity="0.5" stroke-width="2" stroke-linecap="round"/>
+  <path d="M420 828L430 846L420 864L410 846L420 828Z" fill="#7b2fff"/>
+
+  <text x="420" y="910" fill="#9aa4b2" font-family="DM Sans, system-ui, -apple-system, BlinkMacSystemFont, Segoe UI, sans-serif" font-size="36" font-weight="700" text-anchor="middle">
+    Profile image
+  </text>
+</svg>

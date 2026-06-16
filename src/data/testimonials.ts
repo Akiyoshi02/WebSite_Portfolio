@@ -1,18 +1,46 @@
+import { fallbackTestimonials } from "@/lib/fallbackContent";
+import { isSupabaseConfigured, supabase } from "@/lib/supabase";
+import type { TestimonialRow } from "@/types/supabase";
+
 export interface Testimonial {
   text: string;
   name: string;
   title: string;
   company: string;
-  /** 1–2 character monogram shown in the avatar circle */
   initials: string;
+  avatarUrl: string | null;
 }
 
-export const testimonials: readonly Testimonial[] = [
-  {
-    text: "CleanOps Pro was for one of our client. Scheduling, attendance, proof, and invoicing in one app instead of spreadsheets everywhere. The team got how cleaners work on site and kept us in the loop without the usual back-and-forth.",
-    name: "Dylan Rodrigo",
-    title: "Operations Manager",
-    company: "Cynectex (Pvt) Ltd",
-    initials: "DR",
-  },
-];
+function mapTestimonials(rows: TestimonialRow[]): Testimonial[] {
+  return rows
+    .sort((a, b) => a.sort_order - b.sort_order)
+    .map((row) => ({
+      text: row.text,
+      name: row.name,
+      title: row.title,
+      company: row.company,
+      initials: row.initials,
+      avatarUrl: row.avatar_url ?? null,
+    }));
+}
+
+export async function getTestimonials(): Promise<Testimonial[]> {
+  if (!isSupabaseConfigured) return mapTestimonials(fallbackTestimonials);
+
+  try {
+    const { data, error } = await supabase
+      .from("testimonials")
+      .select("*")
+      .order("sort_order", { ascending: true });
+
+    if (error) {
+      console.error("Failed to fetch testimonials:", error);
+      return mapTestimonials(fallbackTestimonials);
+    }
+
+    return mapTestimonials((data ?? []) as TestimonialRow[]);
+  } catch (error) {
+    console.error("Failed to fetch testimonials:", error);
+    return mapTestimonials(fallbackTestimonials);
+  }
+}

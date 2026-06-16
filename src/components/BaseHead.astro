@@ -2,31 +2,34 @@
 import "@/styles/global.css";
 import SEO from "./SEO.astro";
 import { ClientRouter } from "astro:transitions";
-import { site } from "@/config/site";
+import { getSiteConfig } from "@/config/site";
 
 type SeoProps = Parameters<typeof SEO>[0];
 export interface Props extends SeoProps {}
 const seoProps = Astro.props;
+const site = await getSiteConfig();
 
 ---
 
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+<meta name="author" content={site.fullName ?? site.name} />
 
 <link rel="icon" type="image/png" href="/favicon.png" />
 <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+<link rel="manifest" href="/site.webmanifest" />
 
+<!-- Fonts: single stylesheet request; preconnects reduce handshake latency -->
 <link rel="preconnect" href="https://fonts.googleapis.com" />
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-<link
-  rel="preload"
-  as="style"
-  href="https://fonts.googleapis.com/css2?family=DM+Sans:opsz,wght@9..40,400;9..40,500;9..40,600;9..40,700&family=JetBrains+Mono:wght@400;500;700&family=Syne:wght@500;600;700;800&display=swap"
-/>
 <link
   rel="stylesheet"
   href="https://fonts.googleapis.com/css2?family=DM+Sans:opsz,wght@9..40,400;9..40,500;9..40,600;9..40,700&family=JetBrains+Mono:wght@400;500;700&family=Syne:wght@500;600;700;800&display=swap"
 />
+
+<!-- Preconnect for skill icon CDNs used throughout the page -->
+<link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin />
+<link rel="dns-prefetch" href="https://cdn.simpleicons.org" />
 
 <link rel="sitemap" href="/sitemap-index.xml" />
 <link rel="alternate" type="application/rss+xml" title={`${site.name} - Writing`} href="/rss.xml" />
@@ -34,6 +37,24 @@ const seoProps = Astro.props;
 <SEO {...seoProps} />
 
 <ClientRouter />
+
+<script is:inline>
+  (function () {
+    var hash = window.location.hash.replace(/^#/, "");
+    if (!hash) return;
+
+    var params = new URLSearchParams(hash);
+    var isRecoveryLink =
+      params.get("type") === "recovery" ||
+      params.has("access_token") ||
+      params.has("refresh_token") ||
+      params.has("error_description");
+
+    if (isRecoveryLink && window.location.pathname.replace(/\/$/, "") !== "/admin-panel/reset-password") {
+      window.location.replace("/admin-panel/reset-password" + window.location.hash);
+    }
+  })();
+</script>
 
 <script is:inline>
   // Restore theme before paint to avoid flash of incorrect theme

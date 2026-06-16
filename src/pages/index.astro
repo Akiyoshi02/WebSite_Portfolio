@@ -9,7 +9,13 @@ import Education from "@/components/sections/Education.astro";
 import Testimonials from "@/components/sections/Testimonials.astro";
 import Writing from "@/components/sections/Writing.astro";
 import Contact from "@/components/sections/Contact.astro";
-import { site } from "@/config/site";
+import { getSiteConfig } from "@/config/site";
+import { getEducationEntries, getWorkExperience } from "@/lib/content";
+
+const site = await getSiteConfig();
+const educationList = await getEducationEntries();
+const workExperience = await getWorkExperience();
+const currentWork = workExperience[0];
 
 const personJsonLd = {
   "@context": "https://schema.org",
@@ -21,32 +27,17 @@ const personJsonLd = {
   email: site.email,
   address: {
     "@type": "PostalAddress",
-    addressLocality: "Ragama",
-    addressRegion: "Western Province",
-    addressCountry: "LK",
+    addressLocality: site.location,
   },
-  alumniOf: [
-    {
-      "@type": "EducationalOrganization",
-      name: "Thurstan College",
-      sameAs: "https://www.thurstan.lk/",
-    },
-    {
-      "@type": "EducationalOrganization",
-      name: "SLIIT City University",
-      sameAs: "https://city.sliit.lk/",
-    },
-    {
-      "@type": "EducationalOrganization",
-      name: "University of Bedfordshire",
-      sameAs: "https://www.beds.ac.uk/",
-    },
-  ],
-  worksFor: {
+  alumniOf: educationList.map((entry) => ({
+    "@type": "EducationalOrganization",
+    name: entry.institution,
+  })),
+  ...(currentWork && { worksFor: {
     "@type": "Organization",
-    name: "Cynectex (Pvt) Ltd",
-    sameAs: "https://cynectex.com/",
-  },
+    name: currentWork.company,
+    ...(currentWork.url && { sameAs: currentWork.url }),
+  } }),
   sameAs: [
     site.socials.github,
     site.socials.linkedin,

@@ -1,0 +1,100 @@
+<svg width="512" height="512" viewBox="0 0 512 512" fill="none" xmlns="http://www.w3.org/2000/svg" role="img" aria-labelledby="companyTitle companyDesc">
+  <title id="companyTitle">Company logo placeholder</title>
+  <desc id="companyDesc">A modern neutral company logo placeholder used when no logo image is set.</desc>
+
+  <defs>
+    <linearGradient id="companyRingGradient" x1="124" y1="128" x2="388" y2="384" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#00f5d4"/>
+      <stop offset="0.52" stop-color="#7b2fff"/>
+      <stop offset="1" stop-color="#ff4ecd"/>
+    </linearGradient>
+
+    <radialGradient id="companyGlow" cx="0" cy="0" r="1" gradientUnits="userSpaceOnUse" gradientTransform="translate(256 240) rotate(90) scale(210)">
+      <stop offset="0" stop-color="#00f5d4" stop-opacity="0.16"/>
+      <stop offset="0.45" stop-color="#7b2fff" stop-opacity="0.10"/>
+      <stop offset="1" stop-color="#0d1117" stop-opacity="0"/>
+    </radialGradient>
+
+    <filter id="companySoftGlow" x="-40%" y="-40%" width="180%" height="180%">
+      <feGaussianBlur stdDeviation="5" result="blur"/>
+      <feMerge>
+        <feMergeNode in="blur"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+  </defs>
+
+  <rect width="512" height="512" rx="48" fill="#0d1117"/>
+  <rect x="1.5" y="1.5" width="509" height="509" rx="48" stroke="#FFFFFF" stroke-opacity="0.08" stroke-width="3"/>
+
+  <rect x="28" y="28" width="456" height="456" rx="38" fill="#0d1117" stroke="#9aa4b2" stroke-opacity="0.24" stroke-width="2"/>
+  <rect x="48" y="48" width="416" height="416" rx="30" fill="url(#companyGlow)" opacity="0.9"/>
+
+  <path d="M64 72H108" stroke="#00f5d4" stroke-width="5" stroke-linecap="round"/>
+  <path d="M64 72V116" stroke="#00f5d4" stroke-width="5" stroke-linecap="round"/>
+  <path d="M448 72H404" stroke="#ff4ecd" stroke-width="5" stroke-linecap="round"/>
+  <path d="M448 72V116" stroke="#ff4ecd" stroke-width="5" stroke-linecap="round"/>
+  <path d="M64 440H108" stroke="#ff4ecd" stroke-width="5" stroke-linecap="round"/>
+  <path d="M64 440V396" stroke="#ff4ecd" stroke-width="5" stroke-linecap="round"/>
+  <path d="M448 440H404" stroke="#00f5d4" stroke-width="5" stroke-linecap="round"/>
+  <path d="M448 440V396" stroke="#00f5d4" stroke-width="5" stroke-linecap="round"/>
+
+  <circle cx="238" cy="70" r="6" fill="#00f5d4"/>
+  <circle cx="256" cy="70" r="6" fill="#7b2fff"/>
+  <circle cx="274" cy="70" r="6" fill="#ff4ecd"/>
+
+  <path d="M112 300C145 190 259 122 361 156C424 177 442 232 401 285C355 345 232 382 132 355C85 342 77 320 112 300Z"
+        stroke="#7b2fff" stroke-opacity="0.45" stroke-width="3" stroke-linecap="round"/>
+
+  <circle cx="256" cy="236" r="156" stroke="#9aa4b2" stroke-opacity="0.42" stroke-width="3" stroke-dasharray="2 9"/>
+  <circle cx="256" cy="236" r="122" fill="#0d1117" stroke="#9aa4b2" stroke-opacity="0.28" stroke-width="3"/>
+
+  <path d="M256 96C179 96 116 159 116 236C116 313 179 376 256 376"
+        stroke="#00f5d4" stroke-width="6" stroke-linecap="round" filter="url(#companySoftGlow)"/>
+  <path d="M256 96C333 96 396 159 396 236C396 313 333 376 256 376"
+        stroke="#ff4ecd" stroke-width="6" stroke-linecap="round" filter="url(#companySoftGlow)"/>
+
+  <circle cx="256" cy="236" r="94" fill="#0d1117" stroke="#9aa4b2" stroke-opacity="0.32" stroke-width="3"/>
+
+  <g fill="#c7ceda">
+    <path d="M215 174H250V209C250 229 234 245 214 245H179V210C179 190 195 174 215 174Z"/>
+    <path d="M262 174H297C317 174 333 190 333 210V245H298C278 245 262 229 262 209V174Z"/>
+    <path d="M179 257H214C234 257 250 273 250 293V328H215C195 328 179 312 179 292V257Z"/>
+    <path d="M298 257H333V292C333 312 317 328 297 328H262V293C262 273 278 257 298 257Z"/>
+  </g>
+
+  <circle cx="379" cy="142" r="13" fill="#00f5d4"/>
+  <circle cx="379" cy="142" r="23" stroke="#00f5d4" stroke-opacity="0.72" stroke-width="3"/>
+  <circle cx="143" cy="338" r="13" fill="#ff4ecd"/>
+  <circle cx="143" cy="338" r="23" stroke="#ff4ecd" stroke-opacity="0.72" stroke-width="3"/>
+
+  <g opacity="0.32">
+    <circle cx="96" cy="180" r="5" fill="#7b2fff"/>
+    <circle cx="116" cy="180" r="5" fill="#7b2fff"/>
+    <circle cx="136" cy="180" r="5" fill="#7b2fff"/>
+    <circle cx="96" cy="200" r="5" fill="#7b2fff"/>
+    <circle cx="116" cy="200" r="5" fill="#7b2fff"/>
+    <circle cx="136" cy="200" r="5" fill="#7b2fff"/>
+    <circle cx="96" cy="220" r="5" fill="#7b2fff"/>
+    <circle cx="116" cy="220" r="5" fill="#7b2fff"/>
+    <circle cx="136" cy="220" r="5" fill="#7b2fff"/>
+
+    <circle cx="390" cy="282" r="5" fill="#7b2fff"/>
+    <circle cx="410" cy="282" r="5" fill="#7b2fff"/>
+    <circle cx="430" cy="282" r="5" fill="#7b2fff"/>
+    <circle cx="390" cy="302" r="5" fill="#7b2fff"/>
+    <circle cx="410" cy="302" r="5" fill="#7b2fff"/>
+    <circle cx="430" cy="302" r="5" fill="#7b2fff"/>
+  </g>
+
+  <path d="M94 144L103 160L94 176L85 160L94 144Z" fill="#7b2fff"/>
+  <path d="M420 330L429 346L420 362L411 346L420 330Z" fill="#7b2fff"/>
+
+  <path d="M170 414H232" stroke="#9aa4b2" stroke-opacity="0.5" stroke-width="2" stroke-linecap="round"/>
+  <path d="M280 414H342" stroke="#9aa4b2" stroke-opacity="0.5" stroke-width="2" stroke-linecap="round"/>
+  <path d="M256 400L264 414L256 428L248 414L256 400Z" fill="#7b2fff"/>
+
+  <text x="256" y="462" fill="#9aa4b2" font-family="DM Sans, system-ui, -apple-system, BlinkMacSystemFont, Segoe UI, sans-serif" font-size="28" font-weight="700" text-anchor="middle">
+    Company logo
+  </text>
+</svg>
