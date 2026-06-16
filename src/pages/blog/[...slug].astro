@@ -1,20 +1,21 @@
 ---
-import { getCollection, render } from "astro:content";
 import type { GetStaticPaths } from "astro";
 import Post from "@/layouts/Post.astro";
+import { getBlogPosts } from "@/lib/content";
+import { renderMarkdown } from "@/lib/markdown";
 
 export const getStaticPaths = (async () => {
-  const posts = await getCollection("posts", ({ data }) => !data.draft);
+  const posts = await getBlogPosts();
   return posts.map((post) => ({
-    params: { slug: post.id.replace(/\.(md|mdx)$/, "") },
+    params: { slug: post.slug },
     props: { post },
   }));
 }) satisfies GetStaticPaths;
 
 const { post } = Astro.props;
-const { Content } = await render(post);
+const html = renderMarkdown(post.body);
 ---
 
 <Post post={post}>
-  <Content />
+  <Fragment set:html={html} />
 </Post>

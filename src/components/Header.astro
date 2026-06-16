@@ -1,6 +1,8 @@
 ---
 import Icon from "./Icon.astro";
-import { site } from "@/config/site";
+import { getSiteConfig } from "@/config/site";
+
+const site = await getSiteConfig();
 ---
 
 <a class="skip-link" href="#main">Skip to content</a>
@@ -35,13 +37,6 @@ import { site } from "@/config/site";
       >
         <Icon name="terminal" />
       </button>
-      <a
-        class="btn btn-outline desktop-cv interactive"
-        href="/cv.pdf"
-        download
-      >
-        Download CV
-      </a>
       <button
         class="icon-btn menu-toggle interactive"
         id="menu-toggle"
@@ -66,9 +61,6 @@ import { site } from "@/config/site";
       <button class="btn btn-outline interactive" type="button" data-cli-open>
         Open Terminal
       </button>
-      <a class="btn btn-outline interactive" href="/cv.pdf" download>
-        Download CV
-      </a>
     </nav>
   </div>
 </div>

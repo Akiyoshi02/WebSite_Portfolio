@@ -1,15 +1,8 @@
 ---
-import { getCollection } from "astro:content";
 import ProjectCard from "@/components/ProjectCard.astro";
+import { getProjects } from "@/lib/content";
 
-const allProjects = await getCollection("projects", ({ data }) => !data.draft);
-
-const sortedProjects = allProjects.sort((a, b) => {
-  const orderA = a.data.order ?? 1000;
-  const orderB = b.data.order ?? 1000;
-  if (orderA !== orderB) return orderA - orderB;
-  return b.data.year - a.data.year;
-});
+const sortedProjects = await getProjects();
 
 const filters = [
   { id: "all", label: "All" },
@@ -17,6 +10,7 @@ const filters = [
   { id: "mobile", label: "Mobile" },
   { id: "api", label: "APIs" },
   { id: "open-source", label: "Open Source" },
+  { id: "other", label: "Other" },
 ] as const;
 ---
 

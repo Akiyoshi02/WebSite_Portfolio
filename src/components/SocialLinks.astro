@@ -1,6 +1,8 @@
 ---
 import Icon from "./Icon.astro";
-import { site } from "@/config/site";
+import { getSiteConfig } from "@/config/site";
+
+const site = await getSiteConfig();
 ---
 
 <div class="social-row" aria-label="Social links">
@@ -10,7 +12,7 @@ import { site } from "@/config/site";
       data-tooltip="GitHub"
       href={site.socials.github}
       aria-label="GitHub profile"
-      rel="me noopener"
+      rel="me noopener noreferrer"
     >
       <Icon name="github" />
     </a>
@@ -21,7 +23,7 @@ import { site } from "@/config/site";
       data-tooltip="LinkedIn"
       href={site.socials.linkedin}
       aria-label="LinkedIn profile"
-      rel="me noopener"
+      rel="me noopener noreferrer"
     >
       <Icon name="linkedin" />
     </a>
@@ -32,7 +34,7 @@ import { site } from "@/config/site";
       data-tooltip="X"
       href={site.socials.x}
       aria-label="X profile"
-      rel="me noopener"
+      rel="me noopener noreferrer"
     >
       <Icon name="x" />
     </a>
@@ -43,7 +45,7 @@ import { site } from "@/config/site";
       data-tooltip="Instagram"
       href={site.socials.instagram}
       aria-label="Instagram profile"
-      rel="me noopener"
+      rel="me noopener noreferrer"
     >
       <Icon name="instagram" />
     </a>
@@ -54,9 +56,31 @@ import { site } from "@/config/site";
       data-tooltip="Facebook"
       href={site.socials.facebook}
       aria-label="Facebook profile"
-      rel="me noopener"
+      rel="me noopener noreferrer"
     >
       <Icon name="facebook" />
+    </a>
+  )}
+  {site.socials.mastodon && (
+    <a
+      class="icon-btn tooltip interactive"
+      data-tooltip="Mastodon"
+      href={site.socials.mastodon}
+      aria-label="Mastodon profile"
+      rel="me noopener noreferrer"
+    >
+      <Icon name="mastodon" />
+    </a>
+  )}
+  {site.socials.youtube && (
+    <a
+      class="icon-btn tooltip interactive"
+      data-tooltip="YouTube"
+      href={site.socials.youtube}
+      aria-label="YouTube channel"
+      rel="me noopener noreferrer"
+    >
+      <Icon name="youtube" />
     </a>
   )}
   {site.socials.email && (

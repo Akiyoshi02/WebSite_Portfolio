@@ -1,4 +1,7 @@
 ---
+import { getEducationEntries } from "@/lib/content";
+
+const educationList = await getEducationEntries();
 ---
 
 <section class="section" id="education" data-animate>
@@ -13,85 +16,34 @@
     </div>
 
     <div class="education-stack">
-      <article class="education-card glass">
-        <div>
-          <span class="date-badge">2008 – 2022</span>
-          <h3>Thurstan College, Sri Lanka</h3>
-          <p>
-            <strong>G.C.E. Ordinary Level</strong>
-          </p>
-          <div class="tag-row" style="margin-top:18px">
-            <span class="tag">G.C.E. O/L</span>
-            <span class="tag">Secondary Education</span>
-            <span class="tag">Academic Foundation</span>
-            <span class="tag">Leadership</span>
-            <span class="tag">Teamwork</span>
+      {educationList.map((entry) => (
+        <article class="education-card glass">
+          <div>
+            <span class="date-badge">{entry.period}</span>
+            <h3>{entry.institution}</h3>
+            <p>
+              <strong>{entry.degree}</strong>
+            </p>
+            <div class="tag-row" style="margin-top:18px">
+              {entry.tags.map((tag) => (
+                <span class="tag">{tag}</span>
+              ))}
+            </div>
           </div>
-        </div>
-        <figure class="education-logo education-logo--crest">
-          <img
-            src="/logos/thurstan.png"
-            alt="Thurstan College"
-            width="1254"
-            height="1254"
-            loading="lazy"
-            decoding="async"
-          />
-        </figure>
-      </article>
-
-      <article class="education-card glass">
-        <div>
-          <span class="date-badge">2022 – 2025</span>
-          <h3>SLIIT City University, Sri Lanka</h3>
-          <p>
-            <strong>Foundation Certificate + HND in Information Technology</strong>
-          </p>
-          <div class="tag-row" style="margin-top:18px">
-            <span class="tag">Programming</span>
-            <span class="tag">Web Dev</span>
-            <span class="tag">Databases</span>
-            <span class="tag">Server-side</span>
-            <span class="tag">Dean&apos;s List 2024</span>
-          </div>
-        </div>
-        <figure class="education-logo education-logo--wide">
-          <img
-            src="/logos/sliit.png"
-            alt="SLIIT City University"
-            width="864"
-            height="466"
-            loading="lazy"
-            decoding="async"
-          />
-        </figure>
-      </article>
-
-      <article class="education-card glass">
-        <div>
-          <span class="date-badge">2025 – Present</span>
-          <h3>University of Bedfordshire, UK</h3>
-          <p>
-            <strong>BSc (Hons) Software Engineering</strong>
-          </p>
-          <div class="tag-row" style="margin-top:18px">
-            <span class="tag">Software Engineering</span>
-            <span class="tag">Software Development</span>
-            <span class="tag">Databases</span>
-            <span class="tag">Project Execution</span>
-          </div>
-        </div>
-        <figure class="education-logo education-logo--wide">
-          <img
-            src="/logos/bedfordshire.png"
-            alt="University of Bedfordshire"
-            width="1234"
-            height="492"
-            loading="lazy"
-            decoding="async"
-          />
-        </figure>
-      </article>
+          {entry.logo_path && (
+            <figure class={`education-logo education-logo--${entry.logo_type}`}>
+              <img
+                src={entry.logo_path}
+                alt={entry.institution}
+                width={entry.logo_width}
+                height={entry.logo_height}
+                loading="lazy"
+                decoding="async"
+              />
+            </figure>
+          )}
+        </article>
+      ))}
     </div>
   </div>
 </section>

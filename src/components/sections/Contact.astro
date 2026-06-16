@@ -2,8 +2,9 @@
 import ContactConnect from "@/components/ContactConnect.astro";
 import ContactMap from "@/components/ContactMap.astro";
 import Icon from "@/components/Icon.astro";
-import { site } from "@/config/site";
+import { getSiteConfig } from "@/config/site";
 
+const site = await getSiteConfig();
 const emailDisplay = site.email;
 
 const subjectOptions = [
@@ -43,7 +44,7 @@ const subjectOptions = [
           </article>
 
           {site.socials.linkedin && (
-            <a class="contact-card glass interactive" href={site.socials.linkedin} rel="me noopener">
+            <a class="contact-card glass interactive" href={site.socials.linkedin} rel="me noopener noreferrer" target="_blank">
               <span class="icon-btn" aria-hidden="true"><Icon name="linkedin" /></span>
               <div>
                 <strong>LinkedIn</strong>
@@ -53,7 +54,7 @@ const subjectOptions = [
           )}
 
           {site.socials.github && (
-            <a class="contact-card glass interactive" href={site.socials.github} rel="me noopener">
+            <a class="contact-card glass interactive" href={site.socials.github} rel="me noopener noreferrer" target="_blank">
               <span class="icon-btn" aria-hidden="true"><Icon name="github" /></span>
               <div>
                 <strong>GitHub</strong>
@@ -70,13 +71,15 @@ const subjectOptions = [
             </div>
           </article>
 
-          <article class="contact-card glass">
-            <span class="icon-btn" aria-hidden="true"><span class="availability-dot"></span></span>
-            <div>
-              <strong>Available for opportunities</strong>
-              <span>Remote, hybrid, and relocation-friendly roles</span>
-            </div>
-          </article>
+          {site.openToWork && (
+            <article class="contact-card glass">
+              <span class="icon-btn" aria-hidden="true"><span class="availability-dot"></span></span>
+              <div>
+                <strong>Available for opportunities</strong>
+                <span>Remote, hybrid, and relocation-friendly roles</span>
+              </div>
+            </article>
+          )}
         </div>
 
         <ContactMap />

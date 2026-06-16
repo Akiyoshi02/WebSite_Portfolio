@@ -1,91 +1,52 @@
-/**
- * Tech stack shown on the homepage in the Skills section.
- * Each item: [displayName, simple-icons slug or external icon URL, brand hex color, optional fallback initials]
- * Pass an empty string as the icon slug to force the fallback to render.
- */
+import { fallbackSkillCategories } from "@/lib/fallbackContent";
+import { isSupabaseConfigured, supabase } from "@/lib/supabase";
+import type { SkillCategoryWithItems } from "@/types/supabase";
 
-/** Colored brand SVGs hosted on jsDelivr (devicon). */
-const DEVICON = (name: string) =>
-  `https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/${name}/${name}-original.svg`;
-
-export type TechItem = readonly [
-  name: string,
-  iconSlug: string,
-  brandHex: string,
-  fallback?: string,
-];
+export interface TechItem {
+  name: string;
+  iconSlug: string;
+  brandHex: string;
+  fallback?: string;
+}
 
 export interface TechCategory {
   title: string;
-  items: readonly TechItem[];
+  items: TechItem[];
 }
 
-export const techCategories: readonly TechCategory[] = [
-  {
-    title: "Languages",
-    items: [
-      ["Java", "openjdk", "#ED8B00"],
-      ["JavaScript", "javascript", "#F7DF1E"],
-      ["TypeScript", "typescript", "#3178C6"],
-      ["Python", "python", "#3776AB"],
-      ["PHP", "php", "#777BB4"],
-      ["HTML5", "html5", "#E34F26"],
-      ["CSS3", DEVICON("css3"), "#1572B6"],
-    ],
-  },
-  {
-    title: "Frontend",
-    items: [
-      ["React", "react", "#61DAFB"],
-      ["Vite", "vite", "#646CFF"],
-      ["Tailwind CSS", "tailwindcss", "#06B6D4"],
-      ["React Router", "reactrouter", "#CA4245"],
-      ["Headless UI", "headlessui", "#66E3FF"],
-      ["PWA", "pwa", "#5A0FC8"],
-    ],
-  },
-  {
-    title: "Backend",
-    items: [
-      ["Node.js", "nodedotjs", "#5FA04E"],
-      ["Express", "express", "#000000"],
-      ["REST APIs", DEVICON("openapi"), "#6BA539"],
-      ["JWT", "jsonwebtokens", "#000000", "JWT"],
-      ["Socket.IO", "socketdotio", "#010101"],
-      ["SendGrid", "https://www.vectorlogo.zone/logos/sendgrid/sendgrid-icon.svg", "#1A82E2"],
-    ],
-  },
-  {
-    title: "Database",
-    items: [
-      ["MySQL", "mysql", "#4479A1"],
-      ["Firebase", "firebase", "#DD2C00"],
-      ["Supabase", "supabase", "#3FCF8E"],
-      ["IndexedDB", "mozilla", "#005A9C"],
-    ],
-  },
-  {
-    title: "AI / ML",
-    items: [
-      ["Ollama", "ollama", "#000000"],
-      [
-        "Whisper STT",
-        "https://upload.wikimedia.org/wikipedia/commons/6/66/OpenAI_logo_2025_%28symbol%29.svg",
-        "#10A37F",
-      ],
-      ["MediaPipe", "mediapipe", "#00f5d4"],
-      ["Hugging Face", "huggingface", "#FFD21E"],
-    ],
-  },
-  {
-    title: "DevOps & Tools",
-    items: [
-      ["Docker", "docker", "#2496ED"],
-      ["GitHub Actions", "githubactions", "#2088FF"],
-      ["Git", "git", "#F05032"],
-      ["GitHub", "github", "#181717"],
-      ["Azure", DEVICON("azure"), "#0078D4"],
-      ["WordPress", "wordpress", "#21759B"],
-    ],
-  },
-];
+function mapCategories(categories: SkillCategoryWithItems[]): TechCategory[] {
+  return categories
+    .sort((a, b) => a.sort_order - b.sort_order)
+    .map((category) => ({
+      title: category.title,
+      items: (category.skill_items ?? [])
+        .sort((a, b) => a.sort_order - b.sort_order)
+        .map((item) => ({
+          name: item.name,
+          iconSlug: item.icon_slug,
+          brandHex: item.brand_hex,
+          fallback: item.fallback ?? undefined,
+        })),
+    }));
+}
+
+export async function getTechCategories(): Promise<TechCategory[]> {
+  if (!isSupabaseConfigured) return mapCategories(fallbackSkillCategories);
+
+  try {
+    const { data, error } = await supabase
+      .from("skill_categories")
+      .select("*, skill_items(*)")
+      .order("sort_order", { ascending: true });
+
+    if (error || !data) {
+      console.error("Failed to fetch skill_categories:", error);
+      return mapCategories(fallbackSkillCategories);
+    }
+
+    return mapCategories(data as SkillCategoryWithItems[]);
+  } catch (error) {
+    console.error("Failed to fetch skill_categories:", error);
+    return mapCategories(fallbackSkillCategories);
+  }
+}

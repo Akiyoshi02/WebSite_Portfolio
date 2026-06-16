@@ -1,6 +1,8 @@
 ---
 import Icon from "@/components/Icon.astro";
-import { testimonials } from "@/data/testimonials";
+import { getTestimonials } from "@/data/testimonials";
+
+const testimonials = await getTestimonials();
 ---
 
 <section class="section" id="testimonials" data-animate>
@@ -19,7 +21,18 @@ import { testimonials } from "@/data/testimonials";
               <p>{item.text}</p>
             </div>
             <div class="author-row">
-              <span class="avatar">{item.initials}</span>
+              <span class="avatar has-photo">
+                <img
+                  class={item.avatarUrl?.trim() ? undefined : "is-placeholder"}
+                  src={item.avatarUrl?.trim() || "/images/profile-placeholder.svg"}
+                  alt={item.avatarUrl?.trim() ? `${item.name} profile photo` : "Profile placeholder"}
+                  width="52"
+                  height="52"
+                  loading="lazy"
+                  decoding="async"
+                  referrerpolicy="no-referrer"
+                />
+              </span>
               <div>
                 <strong>{item.name}</strong>
                 <p style="line-height:1.35">{item.title} · {item.company}</p>

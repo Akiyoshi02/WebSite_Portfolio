@@ -1,11 +1,10 @@
 ---
 import Base from "@/layouts/Base.astro";
-import { site } from "@/config/site";
+import { getSiteConfig } from "@/config/site";
+import { getNowPage } from "@/lib/content";
 
-// Anchor /now to a fixed date so the page reads as a real snapshot
-// rather than "today, by accident." Update this string whenever you
-// refresh the content below.
-const LAST_UPDATED = "2026-05-21";
+const site = await getSiteConfig();
+const now = await getNowPage();
 
 function formatDate(input: string) {
   return new Intl.DateTimeFormat("en-US", {
@@ -34,31 +33,22 @@ function formatDate(input: string) {
 
       <div class="prose">
         <p>
-          <strong>Location.</strong> {site.location}.
+          <strong>Location.</strong> {now.location}.
         </p>
         <p>
-          <strong>Working on.</strong> Junior Web Developer at
-          <a href="https://cynectex.com/">Cynectex</a>, shipping client web apps and API work,
-          while pushing forward on two personal builds:
-          <a href="/projects/interviewai-pro">InterviewAI&nbsp;Pro</a> and
-          <a href="/projects/cleanops-pro">CleanOps&nbsp;Pro</a>.
+          <strong>Working on.</strong> {now.working_on}
         </p>
         <p>
-          <strong>Studying.</strong> BSc (Hons) Software Engineering at the
-          University of Bedfordshire, UK.
+          <strong>Studying.</strong> {now.studying}
         </p>
         <p>
-          <strong>Learning.</strong> Backend engineering depth, AI integration
-          patterns (local LLMs, retrieval, speech I/O), and system design fundamentals
-          for production-ready software.
+          <strong>Learning.</strong> {now.learning}
         </p>
         <p>
-          <strong>Open to.</strong> Software engineering opportunities: remote, hybrid,
-          or relocation-friendly. Junior to mid-level roles where careful engineering
-          and ownership matter.
+          <strong>Open to.</strong> {now.open_to}
         </p>
         <p style="margin-top:32px;color:var(--text-muted);font-family:var(--font-mono);font-size:.85rem">
-          Last updated {formatDate(LAST_UPDATED)}.
+          Last updated {formatDate(now.last_updated)}.
         </p>
       </div>
     </div>

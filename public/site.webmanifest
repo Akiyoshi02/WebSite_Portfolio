@@ -1,0 +1,23 @@
+{
+  "name": "Akiyoshi Yapa",
+  "short_name": "Akiyoshi",
+  "description": "Portfolio of Akiyoshi Yapa, a software engineering undergraduate and full-stack developer building practical, AI-powered web products from Sri Lanka.",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#050810",
+  "theme_color": "#050810",
+  "icons": [
+    {
+      "src": "/favicon.png",
+      "sizes": "any",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/apple-touch-icon.png",
+      "sizes": "180x180",
+      "type": "image/png",
+      "purpose": "maskable"
+    }
+  ]
+}

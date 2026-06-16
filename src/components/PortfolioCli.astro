@@ -1,16 +1,12 @@
 ---
-import { getCollection } from "astro:content";
-import { site } from "@/config/site";
-import { techCategories } from "@/data/tech";
+import { getSiteConfig } from "@/config/site";
+import { getTechCategories } from "@/data/tech";
+import { getProjects } from "@/lib/content";
 import Icon from "@/components/Icon.astro";
 
-const allProjects = await getCollection("projects", ({ data }) => !data.draft);
-const sortedProjects = allProjects.sort((a, b) => {
-  const orderA = a.data.order ?? 1000;
-  const orderB = b.data.order ?? 1000;
-  if (orderA !== orderB) return orderA - orderB;
-  return b.data.year - a.data.year;
-});
+const site = await getSiteConfig();
+const sortedProjects = await getProjects();
+const techCategories = await getTechCategories();
 
 const aiKeywords = [
   "ai-powered",
@@ -25,23 +21,26 @@ const aiKeywords = [
 ];
 
 const projects = sortedProjects.map((project) => {
-  const slug = project.id.replace(/\.(md|mdx)$/, "");
   const searchable = [
-    project.data.title,
-    project.data.tagline,
-    project.data.description,
-    ...project.data.stack,
+    project.title,
+    project.tagline,
+    project.description,
+    ...project.stack,
   ].join(" ").toLowerCase();
 
   return {
-    title: project.data.title,
-    tagline: project.data.tagline,
-    description: project.data.description,
-    category: project.data.category,
-    stack: project.data.stack,
-    year: project.data.year,
-    href: `/projects/${slug}`,
-    links: project.data.links,
+    title: project.title,
+    tagline: project.tagline,
+    description: project.description,
+    category: project.category,
+    stack: project.stack,
+    year: project.year,
+    href: `/projects/${project.slug}`,
+    links: {
+      live: project.link_live,
+      repo: project.link_repo,
+      caseStudy: project.link_case_study,
+    },
     isAi: aiKeywords.some((keyword) => searchable.includes(keyword)),
   };
 });
@@ -60,11 +59,12 @@ const cliData = {
   projects,
   stack: techCategories.map((category) => ({
     title: category.title,
-    items: category.items.map(([name]) => name),
+    items: category.items.map((item) => item.name),
   })),
 };
 
 const safeCliData = JSON.stringify(cliData).replace(/</g, "\\u003c");
+const cliPrompt = `${site.shortName.toLowerCase()}@portfolio:~$`;
 ---
 
 <div
@@ -87,7 +87,7 @@ const safeCliData = JSON.stringify(cliData).replace(/</g, "\\u003c");
       </div>
       <div>
         <p class="cli-eyebrow">Interactive terminal</p>
-        <h2 id="portfolio-cli-title">Akiyoshi Portfolio CLI</h2>
+        <h2 id="portfolio-cli-title">{site.shortName} Portfolio CLI</h2>
       </div>
       <kbd class="cli-shortcut" title="Use the backtick key below Escape - not the apostrophe (') key.">Ctrl + `</kbd>
       <button class="icon-btn cli-close interactive" type="button" data-cli-close aria-label="Close terminal">
@@ -102,7 +102,7 @@ const safeCliData = JSON.stringify(cliData).replace(/</g, "\\u003c");
     <div class="cli-output" id="portfolio-cli-output" role="log" aria-live="polite" aria-relevant="additions"></div>
 
     <form class="cli-input-row" id="portfolio-cli-form" autocomplete="off">
-      <span class="cli-prompt" aria-hidden="true">akiyoshi@portfolio:~$</span>
+      <span class="cli-prompt" aria-hidden="true">{cliPrompt}</span>
       <label class="sr-only" for="portfolio-cli-input">Portfolio terminal command</label>
       <input
         id="portfolio-cli-input"

@@ -906,13 +906,17 @@ function setupPortfolioCli(): void {
 
   function runWhyHireMe(): void {
     const entry = createEntry("result");
-    appendText(entry, "Why hire Akiyoshi:");
+    const firstName = cliData.site.name.trim().split(/\s+/)[0] || cliData.site.shortName;
+    const aiProject = cliData.projects.find((project) => project.isAi);
+    appendText(entry, `Why hire ${firstName}:`);
     appendList(entry, [
-      "He ships complete products, not only static UI screens.",
-      "He can work across frontend, backend, deployment, email, auth, and data flows.",
-      "InterviewAI Pro shows real AI product thinking with speech, local LLMs, dashboards, and role-based workflows.",
-      "This portfolio itself is production-minded: Astro, MDX content, SEO, RSS, Netlify Functions, and validated SMTP contact.",
-      "As a recent graduate, he brings current tooling, strong learning speed, and proof that he finishes ambitious projects.",
+      `${firstName} ships complete products, not only static UI screens.`,
+      `${firstName} can work across frontend, backend, deployment, email, auth, and data flows.`,
+      aiProject
+        ? `${aiProject.title} shows product thinking with ${aiProject.stack.slice(0, 5).join(", ")}.`
+        : "The project work shows practical product thinking across the stack.",
+      "This portfolio itself is production-minded: Astro, content management, SEO, RSS, Netlify Functions, and validated SMTP contact.",
+      "The work demonstrates learning speed, ownership, and proof of finishing ambitious builds.",
     ]);
     const actions: HTMLElement[] = [
       createAction("View projects", () => openHash("#projects")),
@@ -972,7 +976,7 @@ function setupPortfolioCli(): void {
 
     const anchor = document.createElement("a");
     anchor.href = cliData.site.cvPath;
-    anchor.download = "Akiyoshi-Yapa-CV.pdf";
+    anchor.download = `${cliData.site.name.trim().replace(/[^a-z0-9]+/gi, "-").replace(/(^-|-$)/g, "") || "portfolio"}-CV.pdf`;
     document.body.appendChild(anchor);
     anchor.click();
     anchor.remove();

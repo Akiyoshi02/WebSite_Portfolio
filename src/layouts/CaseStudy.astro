@@ -1,37 +1,77 @@
 ---
 import Base from "./Base.astro";
-import { site } from "@/config/site";
-import type { CollectionEntry } from "astro:content";
+import { getSiteConfig } from "@/config/site";
+import { normaliseProjectMedia } from "@/lib/projectMedia";
+import { isSupabaseConfigured } from "@/lib/supabase";
+import type { ProjectRow } from "@/types/supabase";
 
 interface Props {
-  project: CollectionEntry<"projects">;
+  project: ProjectRow;
 }
 
+const site = await getSiteConfig();
 const { project } = Astro.props;
-const { data } = project;
+const fallbackMediaAlt = `${project.title} project media`;
+const publicSupabaseUrl = import.meta.env.PUBLIC_SUPABASE_URL ?? "";
+const publicSupabaseAnonKey = import.meta.env.PUBLIC_SUPABASE_ANON_KEY ?? "";
+const projectMediaItems = normaliseProjectMedia(project.media_items);
+const pageImage = projectMediaItems.find((item) => item.type === "image")?.url;
+
+function getVideoEmbedUrl(url: string) {
+  try {
+    const parsed = new URL(url);
+    const host = parsed.hostname.replace(/^www\./, "");
+
+    if (host === "youtu.be") {
+      const id = parsed.pathname.split("/").filter(Boolean)[0];
+      return id ? `https://www.youtube.com/embed/${id}` : null;
+    }
+
+    if (host === "youtube.com" || host === "m.youtube.com") {
+      const id = parsed.searchParams.get("v") ?? parsed.pathname.split("/").filter(Boolean).pop();
+      return id ? `https://www.youtube.com/embed/${id}` : null;
+    }
+
+    if (host === "vimeo.com") {
+      const id = parsed.pathname.split("/").filter(Boolean)[0];
+      return id ? `https://player.vimeo.com/video/${id}` : null;
+    }
+  } catch {
+    return null;
+  }
+
+  return null;
+}
+
+const projectMediaGallery = projectMediaItems.map((item) => ({
+  ...item,
+  captionText: item.caption ?? item.alt,
+  embedUrl: item.type === "video" ? getVideoEmbedUrl(item.url) : null,
+}));
 
 const jsonLd = {
   "@context": "https://schema.org",
   "@type": "CreativeWork",
-  name: data.title,
-  description: data.description,
+  name: project.title,
+  description: project.description,
   inLanguage: site.locale,
-  dateCreated: `${data.year}-01-01`,
+  dateCreated: `${project.year}-01-01`,
   url: new URL(Astro.url.pathname, site.url).toString(),
   creator: {
     "@type": "Person",
     name: site.name,
     url: site.url,
   },
-  keywords: data.stack.join(", "),
-  ...(data.links.repo && { codeRepository: data.links.repo }),
-  ...(data.links.live && { sameAs: [data.links.live] }),
+  keywords: project.stack.join(", "),
+  ...(project.link_repo && { codeRepository: project.link_repo }),
+  ...(project.link_live && { sameAs: [project.link_live] }),
 };
 ---
 
 <Base
-  title={data.title}
-  description={data.tagline ?? data.description}
+  title={project.title}
+  description={project.tagline ?? project.description}
+  image={pageImage ?? undefined}
   type="article"
   hidePreloader
   jsonLd={jsonLd}
@@ -39,41 +79,247 @@ const jsonLd = {
   <article class="section">
     <div class="container" style="max-width:880px;margin-inline:auto">
       <a href="/#projects" class="section-kicker interactive" style="display:inline-block;margin-bottom:18px">
-        ← Back to projects
+        Back to projects
       </a>
 
       <header style="display:grid;gap:14px;margin-bottom:28px">
         <span class="date-badge" style="width:fit-content">
-          {data.category.toUpperCase()} · {data.year}
+          {project.category.toUpperCase()} / {project.year}
         </span>
         <h1 style="font-family:var(--font-display);font-size:clamp(2.4rem,5vw,3.6rem);line-height:1.05">
-          {data.title}
+          {project.title}
         </h1>
         <p style="font-size:1.15rem;color:var(--text-soft);max-width:65ch">
-          {data.tagline}
+          {project.tagline}
         </p>
         <div class="tag-row">
-          {data.stack.map((tag) => (
+          {project.stack.map((tag) => (
             <span class="tech-pill">{tag}</span>
           ))}
         </div>
         <div style="display:flex;gap:12px;flex-wrap:wrap;margin-top:6px">
-          {data.links.live && (
-            <a class="btn btn-primary interactive" href={data.links.live} rel="noopener">
-              View live →
+          {project.link_live && (
+            <a class="btn btn-primary interactive" href={project.link_live} rel="noopener noreferrer" target="_blank">
+              View live
             </a>
           )}
-          {data.links.repo && (
-            <a class="btn btn-secondary interactive" href={data.links.repo} rel="noopener">
+          {project.link_repo && (
+            <a class="btn btn-secondary interactive" href={project.link_repo} rel="noopener noreferrer" target="_blank">
               Source code
+            </a>
+          )}
+          {project.link_case_study && (
+            <a class="btn btn-secondary interactive" href={project.link_case_study} rel="noopener noreferrer" target="_blank">
+              External case study
             </a>
           )}
         </div>
       </header>
+
+      <section
+        class="project-media-gallery"
+        data-project-media-gallery
+        hidden={projectMediaGallery.length === 0}
+        aria-label={`${project.title} media gallery`}
+      >
+        <div class="project-gallery-heading">
+          <span class="section-kicker">// Media</span>
+          <h2>Project visuals</h2>
+        </div>
+        <div class="project-gallery-grid" data-project-media-list>
+          {projectMediaGallery.map((item) => (
+            <figure class={`project-gallery-item is-${item.type}`} data-project-media-item>
+              <div class="project-gallery-frame">
+                {item.type === "image" ? (
+                  <img src={item.url} alt={item.alt ?? `${project.title} project media`} loading="lazy" decoding="async" />
+                ) : item.embedUrl ? (
+                  <iframe
+                    src={item.embedUrl}
+                    title={item.alt ?? `${project.title} project video`}
+                    loading="lazy"
+                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                    allowfullscreen
+                  />
+                ) : (
+                  <video controls playsinline preload="metadata" poster={item.poster_url ?? undefined}>
+                    <source src={item.url} />
+                  </video>
+                )}
+              </div>
+              {item.captionText && <figcaption>{item.captionText}</figcaption>}
+            </figure>
+          ))}
+        </div>
+      </section>
 
       <div class="prose">
         <slot />
       </div>
     </div>
   </article>
+
+  {
+    isSupabaseConfigured && (
+      <script
+        is:inline
+        define:vars={{
+          projectSlug: project.slug,
+          fallbackMediaAlt,
+          publicSupabaseUrl,
+          publicSupabaseAnonKey,
+        }}
+      >
+        const mediaGallery = document.querySelector("[data-project-media-gallery]");
+        const mediaList = document.querySelector("[data-project-media-list]");
+
+        function projectVideoEmbedUrl(url) {
+          try {
+            const parsed = new URL(url);
+            const host = parsed.hostname.replace(/^www\./, "");
+
+            if (host === "youtu.be") {
+              const id = parsed.pathname.split("/").filter(Boolean)[0];
+              return id ? `https://www.youtube.com/embed/${id}` : null;
+            }
+
+            if (host === "youtube.com" || host === "m.youtube.com") {
+              const id = parsed.searchParams.get("v") || parsed.pathname.split("/").filter(Boolean).pop();
+              return id ? `https://www.youtube.com/embed/${id}` : null;
+            }
+
+            if (host === "vimeo.com") {
+              const id = parsed.pathname.split("/").filter(Boolean)[0];
+              return id ? `https://player.vimeo.com/video/${id}` : null;
+            }
+          } catch {
+            return null;
+          }
+
+          return null;
+        }
+
+        function textOrEmpty(value) {
+          return typeof value === "string" ? value.trim() : "";
+        }
+
+        function normaliseMediaItems(items) {
+          if (!Array.isArray(items)) return [];
+
+          return items
+            .map((item) => {
+              if (!item || typeof item !== "object") return null;
+              const url = textOrEmpty(item.url);
+              if (!url) return null;
+
+              return {
+                type: item.type === "video" ? "video" : "image",
+                url,
+                alt: textOrEmpty(item.alt),
+                caption: textOrEmpty(item.caption),
+                posterUrl: textOrEmpty(item.poster_url),
+              };
+            })
+            .filter(Boolean);
+        }
+
+        function renderMediaGallery(items) {
+          if (!mediaGallery || !mediaList) return;
+          mediaList.replaceChildren();
+
+          if (!items.length) {
+            mediaGallery.hidden = true;
+            return;
+          }
+
+          const fragment = document.createDocumentFragment();
+
+          items.forEach((item) => {
+            const figure = document.createElement("figure");
+            figure.className = `project-gallery-item is-${item.type}`;
+            figure.dataset.projectMediaItem = "";
+
+            const frame = document.createElement("div");
+            frame.className = "project-gallery-frame";
+
+            if (item.type === "video") {
+              const embedUrl = projectVideoEmbedUrl(item.url);
+              if (embedUrl) {
+                const iframe = document.createElement("iframe");
+                iframe.src = embedUrl;
+                iframe.title = item.alt || `${fallbackMediaAlt} video`;
+                iframe.loading = "lazy";
+                iframe.allow = "accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share";
+                iframe.allowFullscreen = true;
+                frame.append(iframe);
+              } else {
+                const video = document.createElement("video");
+                video.controls = true;
+                video.playsInline = true;
+                video.preload = "metadata";
+                if (item.posterUrl) video.poster = item.posterUrl;
+                const source = document.createElement("source");
+                source.src = item.url;
+                video.append(source);
+                frame.append(video);
+              }
+            } else {
+              const image = document.createElement("img");
+              image.src = item.url;
+              image.alt = item.alt || fallbackMediaAlt;
+              image.loading = "lazy";
+              image.decoding = "async";
+              frame.append(image);
+            }
+
+            figure.append(frame);
+
+            const caption = item.caption || item.alt;
+            if (caption) {
+              const figcaption = document.createElement("figcaption");
+              figcaption.textContent = caption;
+              figure.append(figcaption);
+            }
+
+            fragment.append(figure);
+          });
+
+          mediaList.append(fragment);
+          mediaGallery.hidden = false;
+        }
+
+        async function fetchProjectFields(select) {
+          const endpoint = new URL("/rest/v1/projects", publicSupabaseUrl);
+          endpoint.searchParams.set("select", select);
+          endpoint.searchParams.set("slug", `eq.${projectSlug}`);
+          endpoint.searchParams.set("limit", "1");
+
+          const response = await fetch(endpoint.toString(), {
+            headers: {
+              apikey: publicSupabaseAnonKey,
+              Authorization: `Bearer ${publicSupabaseAnonKey}`,
+            },
+          });
+
+          if (!response.ok) return null;
+          const [latestProject] = await response.json();
+          return latestProject ?? null;
+        }
+
+        async function syncProjectMedia() {
+          if (!projectSlug || !publicSupabaseUrl || !publicSupabaseAnonKey) return;
+
+          try {
+            const latestProject = await fetchProjectFields("media_items");
+            if (!latestProject) return;
+
+            renderMediaGallery(normaliseMediaItems(latestProject.media_items));
+          } catch {
+            // Keep the build-time project content if the live refresh is unavailable.
+          }
+        }
+
+        void syncProjectMedia();
+      </script>
+    )
+  }
 </Base>

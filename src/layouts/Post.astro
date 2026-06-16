@@ -1,24 +1,25 @@
 ---
 import Base from "./Base.astro";
-import { site } from "@/config/site";
-import type { CollectionEntry } from "astro:content";
+import { getSiteConfig } from "@/config/site";
+import type { BlogPostRow } from "@/types/supabase";
 
 interface Props {
-  post: CollectionEntry<"posts">;
+  post: BlogPostRow;
 }
 
+const site = await getSiteConfig();
 const { post } = Astro.props;
-const { data } = post;
-
 const url = new URL(Astro.url.pathname, site.url).toString();
+const pubDate = new Date(post.pub_date);
+const updatedDate = post.updated_date ? new Date(post.updated_date) : null;
 
 const jsonLd = {
   "@context": "https://schema.org",
   "@type": "BlogPosting",
-  headline: data.title,
-  description: data.description,
-  datePublished: data.pubDate.toISOString(),
-  ...(data.updatedDate && { dateModified: data.updatedDate.toISOString() }),
+  headline: post.title,
+  description: post.description,
+  datePublished: pubDate.toISOString(),
+  ...(updatedDate && { dateModified: updatedDate.toISOString() }),
   mainEntityOfPage: { "@type": "WebPage", "@id": url },
   author: {
     "@type": "Person",
@@ -43,39 +44,47 @@ function formatDate(date: Date): string {
 ---
 
 <Base
-  title={data.title}
-  description={data.description}
+  title={post.title}
+  description={post.description}
+  image={post.cover_url ?? undefined}
   type="article"
-  publishedTime={data.pubDate.toISOString()}
-  modifiedTime={data.updatedDate?.toISOString()}
+  publishedTime={pubDate.toISOString()}
+  modifiedTime={updatedDate?.toISOString()}
   hidePreloader
   jsonLd={jsonLd}
 >
   <article class="section">
     <div class="container" style="max-width:780px;margin-inline:auto">
       <a href="/blog" class="section-kicker interactive" style="display:inline-block;margin-bottom:18px">
-        ← All posts
+        All posts
       </a>
 
       <header style="display:grid;gap:14px;margin-bottom:28px">
         <h1 style="font-family:var(--font-display);font-size:clamp(2.2rem,4.6vw,3.2rem);line-height:1.1">
-          {data.title}
+          {post.title}
         </h1>
         <p style="font-size:1.05rem;color:var(--text-soft);max-width:65ch">
-          {data.description}
+          {post.description}
         </p>
         <div style="display:flex;gap:16px;flex-wrap:wrap;color:var(--text-muted);font-family:var(--font-mono);font-size:.85rem">
-          <time datetime={data.pubDate.toISOString()}>{formatDate(data.pubDate)}</time>
-          {data.updatedDate && (
-            <span>· Updated {formatDate(data.updatedDate)}</span>
-          )}
+          <time datetime={pubDate.toISOString()}>{formatDate(pubDate)}</time>
+          {updatedDate && <span>/ Updated {formatDate(updatedDate)}</span>}
         </div>
-        {data.tags.length > 0 && (
+        {post.tags.length > 0 && (
           <div class="tag-row">
-            {data.tags.map((tag) => (
+            {post.tags.map((tag) => (
               <span class="tag">{tag}</span>
             ))}
           </div>
+        )}
+        {post.cover_url && (
+          <img
+            class="post-cover"
+            src={post.cover_url}
+            alt={post.cover_alt ?? `${post.title} cover image`}
+            loading="eager"
+            decoding="async"
+          />
         )}
       </header>
 

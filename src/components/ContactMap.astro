@@ -1,5 +1,8 @@
 ---
 import "leaflet/dist/leaflet.css";
+import { getSiteConfig } from "@/config/site";
+
+const site = await getSiteConfig();
 ---
 
 <div class="map-panel glass contact-map-shell">
@@ -7,12 +10,12 @@ import "leaflet/dist/leaflet.css";
     id="contact-map"
     class="contact-map"
     role="application"
-    aria-label="Interactive map of the approximate Ragama area in Sri Lanka. Drag to pan; click the map to enable scroll zoom."
+    aria-label={`Interactive map of the approximate ${site.location} area. Drag to pan; click the map to enable scroll zoom.`}
     tabindex="0"
   ></div>
   <p class="contact-map-caption">
-    <span class="contact-map-hint">Click map to zoom with scroll · </span>
-    Approximate area · Ragama, Sri Lanka
+    <span class="contact-map-hint">Click map to zoom with scroll - </span>
+    Approximate area - {site.location}
   </p>
 </div>
 

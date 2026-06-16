@@ -1,6 +1,8 @@
 ---
 import Icon from "./Icon.astro";
-import { site } from "@/config/site";
+import { getSiteConfig } from "@/config/site";
+
+const site = await getSiteConfig();
 
 const currentYear = new Date().getFullYear();
 const copyrightYears =
@@ -29,28 +31,38 @@ const copyrightYears =
 
     <div class="footer-socials">
       {site.socials.github && (
-        <a class="icon-btn interactive" href={site.socials.github} aria-label="GitHub" rel="me noopener">
+        <a class="icon-btn interactive" href={site.socials.github} aria-label="GitHub" rel="me noopener noreferrer">
           <Icon name="github" />
         </a>
       )}
       {site.socials.linkedin && (
-        <a class="icon-btn interactive" href={site.socials.linkedin} aria-label="LinkedIn" rel="me noopener">
+        <a class="icon-btn interactive" href={site.socials.linkedin} aria-label="LinkedIn" rel="me noopener noreferrer">
           <Icon name="linkedin" />
         </a>
       )}
       {site.socials.x && (
-        <a class="icon-btn interactive" href={site.socials.x} aria-label="X" rel="me noopener">
+        <a class="icon-btn interactive" href={site.socials.x} aria-label="X" rel="me noopener noreferrer">
           <Icon name="x" />
         </a>
       )}
       {site.socials.instagram && (
-        <a class="icon-btn interactive" href={site.socials.instagram} aria-label="Instagram" rel="me noopener">
+        <a class="icon-btn interactive" href={site.socials.instagram} aria-label="Instagram" rel="me noopener noreferrer">
           <Icon name="instagram" />
         </a>
       )}
       {site.socials.facebook && (
-        <a class="icon-btn interactive" href={site.socials.facebook} aria-label="Facebook" rel="me noopener">
+        <a class="icon-btn interactive" href={site.socials.facebook} aria-label="Facebook" rel="me noopener noreferrer">
           <Icon name="facebook" />
+        </a>
+      )}
+      {site.socials.mastodon && (
+        <a class="icon-btn interactive" href={site.socials.mastodon} aria-label="Mastodon" rel="me noopener noreferrer">
+          <Icon name="mastodon" />
+        </a>
+      )}
+      {site.socials.youtube && (
+        <a class="icon-btn interactive" href={site.socials.youtube} aria-label="YouTube" rel="me noopener noreferrer">
+          <Icon name="youtube" />
         </a>
       )}
       {site.socials.email && (

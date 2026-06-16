@@ -1,7 +1,9 @@
 ---
+import Icon from "@/components/Icon.astro";
 import SocialLinks from "@/components/SocialLinks.astro";
-import { site } from "@/config/site";
+import { getSiteConfig } from "@/config/site";
 
+const site = await getSiteConfig();
 const initialTypedRole = site.typewriterRoles[0] ?? "Full-Stack Developer";
 const [heroFirstName, ...heroLastParts] = site.name.split(" ");
 const heroLastName = heroLastParts.join(" ");
@@ -29,8 +31,7 @@ const heroLastName = heroLastParts.join(" ");
       </span>
     </div>
     <p class="hero-copy" style="--hero-i:3">
-      I build resilient web products, polished interfaces, and practical systems that make complex
-      work feel effortless.
+      {site.heroCopy}
     </p>
     {site.openToWork && (
       <div class="availability" style="--hero-i:4">
@@ -38,10 +39,28 @@ const heroLastName = heroLastParts.join(" ");
       </div>
     )}
     <div class="hero-actions" style="--hero-i:5">
-      <a class="btn btn-primary interactive" href="#projects">View My Work</a>
-      <a class="btn btn-secondary interactive" href="#contact">Let&apos;s Talk</a>
+      <a class="btn btn-primary interactive" href="#projects">
+        View My Work
+        <Icon name="chevron-down" class="icon btn-icon" />
+      </a>
+      <a class="btn btn-secondary interactive" href="#contact">
+        <Icon name="mail" class="icon btn-icon" />
+        Let&apos;s Talk
+      </a>
+      <a class="btn btn-outline interactive" href="/cv.pdf" download>
+        <Icon name="download" class="icon btn-icon" />
+        Download CV
+      </a>
     </div>
-    <div style="--hero-i:6">
+    {site.focusLately && site.focusLately.length > 0 && (
+      <div class="hero-focus" style="--hero-i:6" aria-label="Current focus areas">
+        <span class="hero-focus-label">Focused on:</span>
+        {site.focusLately.map((item) => (
+          <span class="chip">{item}</span>
+        ))}
+      </div>
+    )}
+    <div style="--hero-i:7">
       <SocialLinks />
     </div>
   </div>

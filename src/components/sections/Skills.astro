@@ -1,17 +1,21 @@
 ---
 import { getGitHubActivity } from "@/data/githubContributions";
-import { techCategories } from "@/data/tech";
-import { site } from "@/config/site";
+import { getTechCategories } from "@/data/tech";
+import { getSiteConfig } from "@/config/site";
+import { getSkillIconSrc, isSimpleIconSlug } from "@/lib/iconSources";
 
-const githubUsername = site.socials.github?.replace(/\/$/, "").split("/").pop() ?? "Akiyoshi02";
-const githubActivity = await getGitHubActivity(githubUsername);
-const getTechIconSrc = (icon: string, color: string) =>
-  icon.startsWith("/") || icon.startsWith("http")
-    ? icon
-    : `https://cdn.simpleicons.org/${icon}/${color.replace("#", "")}`;
-
+const site = await getSiteConfig();
+const techCategories = await getTechCategories();
+const githubUsername = site.socials.github?.replace(/\/$/, "").split("/").pop() ?? "";
+const githubActivity = githubUsername
+  ? await getGitHubActivity(githubUsername)
+  : {
+      cells: [],
+      source: "fallback",
+      summary: "Add a GitHub profile in Site Identity to show contribution activity.",
+    };
 const getTechIconClass = (icon: string, color: string): string | undefined => {
-  if (icon.startsWith("http") && !icon.includes("cdn.simpleicons.org")) return undefined;
+  if (!isSimpleIconSlug(icon)) return undefined;
   const hex = color.toLowerCase();
   if (hex === "#ffffff" || hex === "#fff") return "tech-icon-fix-light";
   if (hex === "#000000" || hex === "#000") return "tech-icon-fix-dark";
@@ -40,13 +44,13 @@ const getTechIconStyle = (name: string, icon: string) =>
         <section class="skill-category glass">
           <h3>{category.title}</h3>
           <div class="tech-grid">
-            {category.items.map(([name, icon, color, fallback]) => (
+            {category.items.map(({ name, iconSlug: icon, brandHex: color, fallback }) => (
               <article class="tech-card interactive" style={`--brand:${color}`}>
                 {icon ? (
                   <img
                     alt={`${name} logo`}
                     class={getTechIconClass(icon, color)}
-                    src={getTechIconSrc(icon, color)}
+                    src={getSkillIconSrc(icon, color)}
                     style={getTechIconStyle(name, icon)}
                     loading="lazy"
                     decoding="async"
