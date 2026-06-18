@@ -21,8 +21,10 @@ export const COLORS = {
   glowPink: "rgba(255, 78, 205, 0.14)",
 } as const;
 
-export const SITE_NAME = process.env.SITE_NAME?.trim() || "Akiyoshi Yapa";
-export const SITE_TAGLINE = process.env.SITE_TAGLINE?.trim() || "Software Engineer & Full-Stack Developer";
+export const SITE_NAME = process.env.PORTFOLIO_SITE_NAME?.trim() || "Akiyoshi Yapa";
+export const SITE_TAGLINE =
+  process.env.PORTFOLIO_SITE_TAGLINE?.trim() ||
+  "Software Engineer & Full-Stack Developer";
 export const RESPONSE_TIME = "1-2 business days";
 
 const FONT_LINK =
