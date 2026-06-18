@@ -4,6 +4,9 @@
 
 [build.environment]
   NODE_VERSION = "22"
+  # These values are intentionally public/client-side config or public identity metadata.
+  # Keep real secrets (SMTP_PASS, GH_TOKEN, NETLIFY_BUILD_HOOK_URL) out of this list.
+  SECRETS_SCAN_OMIT_KEYS = "SITE_URL,PORTFOLIO_SITE_NAME,PORTFOLIO_SITE_TAGLINE,PUBLIC_SUPABASE_URL,PUBLIC_SUPABASE_ANON_KEY,PUBLIC_ADMIN_EMAILS,ADMIN_EMAILS,CONTACT_TO_EMAIL,SMTP_FROM,SMTP_USER"
 
 [functions]
   directory = "netlify/functions"

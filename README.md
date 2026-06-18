@@ -65,27 +65,31 @@ Copy the example file and fill in your values:
 cp .env.example .env
 ```
 
-| Variable | Required | Purpose |
-|----------|----------|---------|
-| `SITE_URL` | Recommended | Canonical URL for sitemap, RSS, and Open Graph (e.g. `https://akiyoshiyapa.netlify.app`) |
-| `GH_TOKEN` | Optional | Live GitHub contribution data during `npm run build` |
-| `PUBLIC_SUPABASE_URL` | Yes for CMS/admin | Supabase project URL |
-| `PUBLIC_SUPABASE_ANON_KEY` | Yes for CMS/admin | Supabase anonymous key |
-| `PUBLIC_ADMIN_EMAILS` | Yes for admin | Comma-separated emails allowed through the admin UI check |
-| `ADMIN_EMAILS` | Recommended | Server-side comma-separated admin emails allowed to trigger rebuilds |
-| `NETLIFY_BUILD_HOOK_URL` | Optional | Server-side Netlify build hook used by `/api/rebuild` |
+| Variable | Required | Mark secret in Netlify? | Purpose |
+|----------|----------|-------------------------|---------|
+| `SITE_URL` | Recommended | No | Canonical URL for sitemap, RSS, and Open Graph (e.g. `https://akiyoshiyapa.netlify.app`) |
+| `PORTFOLIO_SITE_NAME` | Recommended | No | Display name used in transactional email templates |
+| `PORTFOLIO_SITE_TAGLINE` | Recommended | No | Display tagline used in transactional email templates |
+| `GH_TOKEN` | Optional | Yes, if used | Live GitHub contribution data during `npm run build` |
+| `PUBLIC_SUPABASE_URL` | Yes for CMS/admin | No | Supabase project URL; intentionally included in browser bundles |
+| `PUBLIC_SUPABASE_ANON_KEY` | Yes for CMS/admin | No | Supabase anonymous key; intentionally included in browser bundles and protected by RLS |
+| `PUBLIC_ADMIN_EMAILS` | Yes for admin | No | Comma-separated emails allowed through the admin UI check |
+| `ADMIN_EMAILS` | Recommended | No | Server-side comma-separated admin emails allowed to trigger rebuilds |
+| `NETLIFY_BUILD_HOOK_URL` | Optional | Yes | Server-side Netlify build hook used by `/api/rebuild` |
 
 **SMTP variables** (server-side only - set in Netlify, not prefixed with `PUBLIC_`):
 
-| Variable | Required | Purpose |
-|----------|----------|---------|
-| `SMTP_HOST` | Yes | Mail server hostname (e.g. `smtp.gmail.com`) |
-| `SMTP_PORT` | No | Port (default `587`; use `465` with `SMTP_SECURE=true`) |
-| `SMTP_SECURE` | No | `true` for TLS on port 465 |
-| `SMTP_USER` | Yes | SMTP username / login |
-| `SMTP_PASS` | Yes | SMTP password or app password |
-| `SMTP_FROM` | Yes | From address (must be allowed by your provider) |
-| `CONTACT_TO_EMAIL` | No | Inbox for submissions (defaults to `akiyoshiyapa@gmail.com`) |
+| Variable | Required | Mark secret in Netlify? | Purpose |
+|----------|----------|-------------------------|---------|
+| `SMTP_HOST` | Yes | No | Mail server hostname (e.g. `smtp.gmail.com`) |
+| `SMTP_PORT` | No | No | Port (default `587`; use `465` with `SMTP_SECURE=true`) |
+| `SMTP_SECURE` | No | No | `true` for TLS on port 465 |
+| `SMTP_USER` | Yes | No | SMTP username / login; usually an email address, not the secret |
+| `SMTP_PASS` | Yes | Yes | SMTP password or app password |
+| `SMTP_FROM` | Yes | No | From address (must be allowed by your provider) |
+| `CONTACT_TO_EMAIL` | No | No | Inbox for submissions (defaults to `akiyoshiyapa@gmail.com`) |
+
+Netlify secret scanning blocks deploys when a value marked as secret appears in repo files or build output. Do not mark public identity/contact values as secret. If a public value was already marked secret, delete and recreate that variable without the secret flag, or rely on the `SECRETS_SCAN_OMIT_KEYS` allowlist in `netlify.toml` for the listed non-sensitive keys.
 
 Do **not** commit `.env`.
 
