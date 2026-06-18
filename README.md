@@ -72,8 +72,10 @@ cp .env.example .env
 | `PUBLIC_SUPABASE_URL` | Yes for CMS/admin | Supabase project URL |
 | `PUBLIC_SUPABASE_ANON_KEY` | Yes for CMS/admin | Supabase anonymous key |
 | `PUBLIC_ADMIN_EMAILS` | Yes for admin | Comma-separated emails allowed through the admin UI check |
+| `ADMIN_EMAILS` | Recommended | Server-side comma-separated admin emails allowed to trigger rebuilds |
+| `NETLIFY_BUILD_HOOK_URL` | Optional | Server-side Netlify build hook used by `/api/rebuild` |
 
-**SMTP variables** (server-side only — set in Netlify, not prefixed with `PUBLIC_`):
+**SMTP variables** (server-side only - set in Netlify, not prefixed with `PUBLIC_`):
 
 | Variable | Required | Purpose |
 |----------|----------|---------|

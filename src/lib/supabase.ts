@@ -16,9 +16,18 @@ export const isSupabaseConfigured = Boolean(
     supabaseUrl.startsWith("https://"),
 );
 
+const isBrowser = typeof window !== "undefined";
+
 export const supabase = createClient(
   isSupabaseConfigured ? supabaseUrl : "https://example.supabase.co",
   isSupabaseConfigured ? supabaseAnonKey : "placeholder-anon-key",
+  {
+    auth: {
+      autoRefreshToken: isBrowser,
+      detectSessionInUrl: isBrowser,
+      persistSession: isBrowser,
+    },
+  },
 );
 
 export function createEphemeralSupabaseClient() {

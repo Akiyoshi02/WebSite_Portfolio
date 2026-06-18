@@ -416,7 +416,7 @@ create policy "Authenticated users can read own admin row"
 on admin_users
 for select
 to authenticated
-using (lower(email) = lower(coalesce(auth.jwt() ->> 'email', '')));
+using (lower(email) = lower(coalesce(((select auth.jwt()) ->> 'email'), '')));
 
 alter table site_config enable row level security;
 alter table about_content enable row level security;
@@ -464,7 +464,7 @@ to authenticated;
 do $$
 declare
   table_name text;
-  admin_check text := 'exists (select 1 from public.admin_users where lower(email) = lower(coalesce(auth.jwt() ->> ''email'', '''')))';
+  admin_check text := 'exists (select 1 from public.admin_users where lower(email) = lower(coalesce(((select auth.jwt()) ->> ''email''), '''')))';
 begin
   foreach table_name in array array[
     'site_config','about_content','education','skill_categories','skill_items',
@@ -512,7 +512,7 @@ using (
   and exists (
     select 1
     from public.admin_users
-    where lower(email) = lower(coalesce(auth.jwt() ->> 'email', ''))
+    where lower(email) = lower(coalesce(((select auth.jwt()) ->> 'email'), ''))
   )
 )
 with check (
@@ -520,7 +520,7 @@ with check (
   and exists (
     select 1
     from public.admin_users
-    where lower(email) = lower(coalesce(auth.jwt() ->> 'email', ''))
+    where lower(email) = lower(coalesce(((select auth.jwt()) ->> 'email'), ''))
   )
 );
 

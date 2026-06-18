@@ -1,5 +1,6 @@
-import { defineCollection, z } from "astro:content";
+import { defineCollection } from "astro:content";
 import { glob } from "astro/loaders";
+import { z } from "astro/zod";
 
 /**
  * PROJECTS: each MDX file in `src/content/projects/` becomes a case-study page
@@ -26,9 +27,9 @@ const projects = defineCollection({
       coverAlt: z.string().optional(),
       links: z
         .object({
-          live: z.string().url().optional(),
-          repo: z.string().url().optional(),
-          caseStudy: z.string().url().optional(),
+          live: z.url().optional(),
+          repo: z.url().optional(),
+          caseStudy: z.url().optional(),
         })
         .default({}),
       draft: z.boolean().default(false),
@@ -72,7 +73,7 @@ const work = defineCollection({
     tags: z.array(z.string()).default([]),
     /** Sort key: higher = more recent (shown first) */
     order: z.number().int(),
-    url: z.string().url().optional(),
+    url: z.url().optional(),
   }),
 });
 

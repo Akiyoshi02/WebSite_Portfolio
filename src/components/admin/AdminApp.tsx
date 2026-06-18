@@ -98,9 +98,8 @@ export default function AdminApp() {
   }
 
   async function triggerRebuild() {
-    const hookUrl = import.meta.env.PUBLIC_NETLIFY_BUILD_HOOK_URL;
-    if (!hookUrl) {
-      notify("Add PUBLIC_NETLIFY_BUILD_HOOK_URL before triggering rebuilds.", "error");
+    if (!session?.access_token) {
+      notify("Sign in again before triggering rebuilds.", "error");
       setConfirmRebuild(false);
       return;
     }
@@ -108,8 +107,15 @@ export default function AdminApp() {
     setRebuilding(true);
     setConfirmRebuild(false);
     try {
-      const response = await fetch(hookUrl, { method: "POST" });
-      if (!response.ok) throw new Error(`Netlify returned ${response.status}`);
+      const response = await fetch("/api/rebuild", {
+        method: "POST",
+        headers: {
+          Accept: "application/json",
+          Authorization: `Bearer ${session.access_token}`,
+        },
+      });
+      const payload = (await response.json().catch(() => null)) as { error?: string } | null;
+      if (!response.ok) throw new Error(payload?.error ?? `Netlify returned ${response.status}`);
       notify("Build triggered. Site will be live in 1-2 minutes.");
     } catch (error) {
       notify(error instanceof Error ? error.message : "Failed to trigger build.", "error");

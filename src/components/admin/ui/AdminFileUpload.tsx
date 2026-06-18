@@ -33,6 +33,13 @@ interface AdminFileUploadProps {
 
 const MAX_UPLOAD_BYTES = 10 * 1024 * 1024;
 const MAX_OUTPUT_DIMENSION = 8000;
+const ALLOWED_IMAGE_TYPES = new Set([
+  "image/avif",
+  "image/gif",
+  "image/jpeg",
+  "image/png",
+  "image/webp",
+]);
 
 function fallbackRecommendation(path: string) {
   const key = path.toLowerCase();
@@ -304,8 +311,8 @@ export default function AdminFileUpload(props: AdminFileUploadProps) {
     setError("");
     setModalError("");
 
-    if (!file.type.startsWith("image/")) {
-      setError("Please choose an image file.");
+    if (!ALLOWED_IMAGE_TYPES.has(file.type)) {
+      setError("Please choose a PNG, JPG, WebP, AVIF, or GIF image.");
       return;
     }
 
@@ -670,7 +677,7 @@ export default function AdminFileUpload(props: AdminFileUploadProps) {
               <path d="M4 14v3a3 3 0 0 0 3 3h10a3 3 0 0 0 3-3v-3" />
             </svg>
             <span className="admin-upload-label">Click to upload or drag and drop</span>
-            <span className="admin-upload-sub">PNG, JPG, WebP, GIF up to 10 MB</span>
+            <span className="admin-upload-sub">PNG, JPG, WebP, AVIF, GIF up to 10 MB</span>
             <span className="admin-upload-dim-badge">Recommended: {recommendedWidth} x {recommendedHeight} px</span>
             <span className="admin-upload-shape-badge">{shapeLabel(previewShape)}</span>
           </>

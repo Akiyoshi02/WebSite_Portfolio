@@ -652,17 +652,7 @@ function setupCopy(): void {
         await navigator.clipboard.writeText(text);
         showToast("Copied to clipboard");
       } catch {
-        const input = document.createElement("input");
-        input.value = text;
-        document.body.appendChild(input);
-        input.select();
-        try {
-          document.execCommand("copy");
-        } catch {
-          /* ignore */
-        }
-        input.remove();
-        showToast("Copied to clipboard");
+        showToast(text);
       }
     });
   });

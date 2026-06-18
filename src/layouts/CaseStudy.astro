@@ -202,13 +202,34 @@ const jsonLd = {
           return typeof value === "string" ? value.trim() : "";
         }
 
+        function safePublicAssetUrl(value) {
+          const trimmed = textOrEmpty(value);
+          if (!trimmed || /[\u0000-\u001F\u007F]/.test(trimmed)) return "";
+
+          if (trimmed.startsWith("/") && !trimmed.startsWith("//")) {
+            try {
+              const parsed = new URL(trimmed, window.location.origin);
+              return `${parsed.pathname}${parsed.search}${parsed.hash}`;
+            } catch {
+              return "";
+            }
+          }
+
+          try {
+            const parsed = new URL(trimmed);
+            return parsed.protocol === "https:" || parsed.protocol === "http:" ? parsed.toString() : "";
+          } catch {
+            return "";
+          }
+        }
+
         function normaliseMediaItems(items) {
           if (!Array.isArray(items)) return [];
 
           return items
             .map((item) => {
               if (!item || typeof item !== "object") return null;
-              const url = textOrEmpty(item.url);
+              const url = safePublicAssetUrl(item.url);
               if (!url) return null;
 
               return {
@@ -216,7 +237,7 @@ const jsonLd = {
                 url,
                 alt: textOrEmpty(item.alt),
                 caption: textOrEmpty(item.caption),
-                posterUrl: textOrEmpty(item.poster_url),
+                posterUrl: safePublicAssetUrl(item.poster_url),
               };
             })
             .filter(Boolean);

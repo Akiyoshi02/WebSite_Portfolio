@@ -20,6 +20,10 @@ const ALLOWED_SUBJECTS = new Set([
 
 const MAX_NAME = 120;
 const MAX_MESSAGE = 5000;
+const MAX_BODY_BYTES = 16 * 1024;
+const RATE_LIMIT_WINDOW_MS = 10 * 60 * 1000;
+const RATE_LIMIT_MAX = 5;
+const attempts = new Map<string, { count: number; resetAt: number }>();
 
 interface ContactPayload {
   name?: string;
@@ -29,10 +33,18 @@ interface ContactPayload {
   company?: string;
 }
 
-function jsonResponse(statusCode: number, body: Record<string, string>): HandlerResponse {
+function jsonResponse(
+  statusCode: number,
+  body: Record<string, string>,
+  extraHeaders: Record<string, string> = {},
+): HandlerResponse {
   return {
     statusCode,
-    headers: { "Content-Type": "application/json" },
+    headers: {
+      "Cache-Control": "no-store",
+      "Content-Type": "application/json; charset=utf-8",
+      ...extraHeaders,
+    },
     body: JSON.stringify(body),
   };
 }
@@ -59,18 +71,59 @@ function getSmtpConfig() {
   return { host, port, secure, user, pass, from, to };
 }
 
+function getClientKey(event: HandlerEvent): string {
+  const forwardedFor = event.headers["x-forwarded-for"]?.split(",")[0]?.trim();
+  return (
+    event.headers["x-nf-client-connection-ip"] ??
+    event.headers["client-ip"] ??
+    forwardedFor ??
+    "unknown"
+  );
+}
+
+function checkRateLimit(key: string) {
+  const now = Date.now();
+  const current = attempts.get(key);
+
+  if (!current || current.resetAt <= now) {
+    attempts.set(key, { count: 1, resetAt: now + RATE_LIMIT_WINDOW_MS });
+    return null;
+  }
+
+  current.count += 1;
+
+  if (current.count > RATE_LIMIT_MAX) {
+    return Math.max(1, Math.ceil((current.resetAt - now) / 1000));
+  }
+
+  return null;
+}
+
 export const handler: Handler = async (event: HandlerEvent, _context: HandlerContext) => {
   if (event.httpMethod === "OPTIONS") {
-    return { statusCode: 204, headers: {}, body: "" };
+    return { statusCode: 204, headers: { "Cache-Control": "no-store" }, body: "" };
   }
 
   if (event.httpMethod !== "POST") {
     return jsonResponse(405, { error: "Method not allowed" });
   }
 
+  const retryAfter = checkRateLimit(getClientKey(event));
+  if (retryAfter) {
+    return jsonResponse(
+      429,
+      { error: "Too many messages. Please try again later." },
+      { "Retry-After": String(retryAfter) },
+    );
+  }
+
   const smtp = getSmtpConfig();
   if (!smtp) {
     return jsonResponse(503, { error: "Contact form is not configured on the server." });
+  }
+
+  if (Buffer.byteLength(event.body ?? "", "utf8") > MAX_BODY_BYTES) {
+    return jsonResponse(413, { error: "Request body is too large." });
   }
 
   let payload: ContactPayload;

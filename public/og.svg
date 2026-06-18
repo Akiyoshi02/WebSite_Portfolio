@@ -51,7 +51,7 @@
   <text x="561" y="412" text-anchor="middle" fill="#ffc857" font-family="DM Sans, system-ui, sans-serif" font-size="18" font-weight="500">DevOps</text>
 
   <!-- Location / URL footer -->
-  <text x="96" y="512" fill="#9aa4b2" font-family="JetBrains Mono, Consolas, monospace" font-size="20" font-weight="400">📍 Sri Lanka · akiyoshiyapa.netlify.app</text>
+  <text x="96" y="512" fill="#9aa4b2" font-family="JetBrains Mono, Consolas, monospace" font-size="20" font-weight="400">Sri Lanka - akiyoshiyapa.netlify.app</text>
 
   <!-- Open to work badge -->
   <circle cx="1064" cy="180" r="56" fill="rgba(32,224,128,0.08)" stroke="#20e080" stroke-width="1.5" stroke-opacity="0.5"/>
