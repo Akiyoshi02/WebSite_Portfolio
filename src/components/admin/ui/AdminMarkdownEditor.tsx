@@ -1,5 +1,5 @@
 import { useMemo } from "react";
-import { marked } from "marked";
+import { renderMarkdown } from "@/lib/markdown";
 
 interface AdminMarkdownEditorProps {
   value: string;
@@ -14,7 +14,7 @@ export default function AdminMarkdownEditor({
   label = "Body",
   hint = "Write in Markdown/MDX",
 }: AdminMarkdownEditorProps) {
-  const preview = useMemo(() => marked.parse(value || "", { async: false }) as string, [value]);
+  const preview = useMemo(() => renderMarkdown(value), [value]);
 
   return (
     <div className="admin-field admin-markdown-editor">

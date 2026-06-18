@@ -1,5 +1,6 @@
 ---
 import { getSiteConfig } from "@/config/site";
+import { normalizePublicAssetUrl } from "@/lib/safeUrl";
 
 interface Props {
   /** Page-specific title; appended with the site name unless `titleOverride` is true. */
@@ -7,7 +8,7 @@ interface Props {
   titleOverride?: boolean;
   /** Page-specific meta description. Falls back to `site.description`. */
   description?: string;
-  /** Absolute or root-relative OG image URL. Falls back to a default SVG card. */
+  /** Absolute or root-relative OG image URL. Falls back to the default social card. */
   image?: string;
   /** "website" | "article", used for og:type. */
   type?: "website" | "article";
@@ -43,17 +44,16 @@ const fullTitle = title
     : `${title} | ${site.name}`
   : `${site.name} | ${site.tagline}`;
 
-// Default OG image: a static file served from /public/og.svg
-// (Previously a SVG data URI — social crawlers like LinkedIn & Facebook do not
-//  process data: URIs, so the card preview was always blank.)
-// For maximum compat, export this SVG to a 1200x630 PNG and replace /public/og.svg with it.
-const defaultOg = new URL("/og.svg", site.url).toString();
+// Default OG image: use PNG because several social crawlers do not reliably render SVG cards.
+const defaultOg = new URL("/og.png", site.url).toString();
+const safeImage = normalizePublicAssetUrl(image);
 
-const ogImage = image
-  ? new URL(image, site.url).toString()
+const ogImage = safeImage
+  ? new URL(safeImage, site.url).toString()
   : defaultOg;
 
 const allJsonLd = Array.isArray(jsonLd) ? jsonLd : jsonLd ? [jsonLd] : [];
+const safeJsonLd = allJsonLd.map((node) => JSON.stringify(node).replace(/</g, "\\u003c"));
 ---
 
 <title>{fullTitle}</title>
@@ -81,6 +81,6 @@ const allJsonLd = Array.isArray(jsonLd) ? jsonLd : jsonLd ? [jsonLd] : [];
 <meta name="twitter:description" content={description} />
 <meta name="twitter:image" content={ogImage} />
 
-{allJsonLd.map((node) => (
-  <script is:inline type="application/ld+json" set:html={JSON.stringify(node)} />
+{safeJsonLd.map((node) => (
+  <script is:inline type="application/ld+json" set:html={node} />
 ))}

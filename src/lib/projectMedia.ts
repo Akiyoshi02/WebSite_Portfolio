@@ -1,10 +1,12 @@
 import type { ProjectMediaItem, ProjectMediaType } from "@/types/supabase";
+import { normalizePublicAssetUrl } from "@/lib/safeUrl";
 
 const videoExtensions = /\.(mp4|webm|ogg|ogv|mov|m4v)(\?.*)?$/i;
 
 function textOrNull(value: unknown) {
   return typeof value === "string" && value.trim() ? value.trim() : null;
 }
+
 export function projectMediaTypeFromUrl(url: string): ProjectMediaType {
   const value = url.trim().toLowerCase();
   if (videoExtensions.test(value) || value.includes("youtube.com") || value.includes("youtu.be") || value.includes("vimeo.com")) {
@@ -20,7 +22,7 @@ export function normaliseProjectMedia(input: unknown): ProjectMediaItem[] {
     .map((item, index) => {
       if (!item || typeof item !== "object") return null;
       const source = item as Record<string, unknown>;
-      const url = textOrNull(source.url);
+      const url = normalizePublicAssetUrl(textOrNull(source.url));
       if (!url) return null;
 
       const requestedType = source.type === "video" || source.type === "image" ? source.type : null;
@@ -33,7 +35,7 @@ export function normaliseProjectMedia(input: unknown): ProjectMediaItem[] {
         url,
         alt: textOrNull(source.alt),
         caption: textOrNull(source.caption),
-        poster_url: textOrNull(source.poster_url),
+        poster_url: normalizePublicAssetUrl(textOrNull(source.poster_url)),
       } satisfies ProjectMediaItem;
     })
     .filter((item): item is ProjectMediaItem => Boolean(item));

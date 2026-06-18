@@ -1,4 +1,5 @@
 import { fallbackSiteConfigRow } from "@/lib/fallbackContent";
+import { mailtoForEmail, normalizeEmailAddress, normalizeExternalUrl } from "@/lib/safeUrl";
 import { isSupabaseConfigured, supabase } from "@/lib/supabase";
 import type { SiteConfigRow } from "@/types/supabase";
 
@@ -13,6 +14,7 @@ const nav = [
 
 function mapSiteConfig(row: SiteConfigRow) {
   const fallbackUrl = (import.meta.env.SITE_URL ?? import.meta.env.SITE ?? row.site_url).replace(/\/$/, "");
+  const email = normalizeEmailAddress(row.email) ?? fallbackSiteConfigRow.email;
 
   return {
     name: row.name,
@@ -24,8 +26,8 @@ function mapSiteConfig(row: SiteConfigRow) {
     heroCopy: row.hero_copy ?? fallbackSiteConfigRow.hero_copy,
     location: row.location,
     timeZoneLabel: row.timezone_label,
-    email: row.email,
-    url: (row.site_url || fallbackUrl).replace(/\/$/, ""),
+    email,
+    url: (normalizeExternalUrl(row.site_url) ?? fallbackUrl).replace(/\/$/, ""),
     locale: row.locale,
     themeColor: row.theme_color,
     startYear: row.start_year,
@@ -33,14 +35,14 @@ function mapSiteConfig(row: SiteConfigRow) {
     typewriterRoles: row.typewriter_roles,
     focusLately: row.focus_lately,
     socials: {
-      github: row.social_github,
-      linkedin: row.social_linkedin,
-      x: row.social_x,
-      instagram: row.social_instagram,
-      facebook: row.social_facebook,
-      mastodon: row.social_mastodon,
-      youtube: row.social_youtube,
-      email: row.email ? `mailto:${row.email}` : null,
+      github: normalizeExternalUrl(row.social_github),
+      linkedin: normalizeExternalUrl(row.social_linkedin),
+      x: normalizeExternalUrl(row.social_x),
+      instagram: normalizeExternalUrl(row.social_instagram),
+      facebook: normalizeExternalUrl(row.social_facebook),
+      mastodon: normalizeExternalUrl(row.social_mastodon),
+      youtube: normalizeExternalUrl(row.social_youtube),
+      email: mailtoForEmail(email),
     },
     nav,
   };

@@ -1,4 +1,5 @@
 import { fallbackTestimonials } from "@/lib/fallbackContent";
+import { normalizePublicAssetUrl } from "@/lib/safeUrl";
 import { isSupabaseConfigured, supabase } from "@/lib/supabase";
 import type { TestimonialRow } from "@/types/supabase";
 
@@ -20,7 +21,7 @@ function mapTestimonials(rows: TestimonialRow[]): Testimonial[] {
       title: row.title,
       company: row.company,
       initials: row.initials,
-      avatarUrl: row.avatar_url ?? null,
+      avatarUrl: normalizePublicAssetUrl(row.avatar_url),
     }));
 }
 

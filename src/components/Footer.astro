@@ -6,7 +6,7 @@ const site = await getSiteConfig();
 
 const currentYear = new Date().getFullYear();
 const copyrightYears =
-  currentYear > site.startYear ? `${site.startYear}–${currentYear}` : `${site.startYear}`;
+  currentYear > site.startYear ? `${site.startYear}-${currentYear}` : `${site.startYear}`;
 ---
 
 <footer class="site-footer">
@@ -72,7 +72,7 @@ const copyrightYears =
       )}
     </div>
 
-    <p>© {copyrightYears} {site.name} · All rights reserved.</p>
+    <p>&copy; {copyrightYears} {site.name} &middot; All rights reserved.</p>
   </div>
 </footer>
 

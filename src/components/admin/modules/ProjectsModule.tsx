@@ -17,6 +17,7 @@ type ProjectForm = Omit<ProjectRow, "id" | "created_at" | "updated_at"> & {
 
 const categories: ProjectCategory[] = ["web", "api", "mobile", "open-source", "other"];
 const maxProjectVideoBytes = 100 * 1024 * 1024;
+const allowedVideoTypes = new Set(["video/mp4", "video/ogg", "video/quicktime", "video/webm"]);
 
 function fileSafeName(name: string) {
   return name.toLowerCase().replace(/[^a-z0-9.-]+/g, "-").replace(/^-+|-+$/g, "") || "project-video";
@@ -69,8 +70,8 @@ function ProjectVideoUpload({ mediaId, onUploaded, onError }: ProjectVideoUpload
   async function handleFile(file: File | null | undefined) {
     if (!file) return;
 
-    if (!file.type.startsWith("video/")) {
-      onError("Please choose a video file.");
+    if (!allowedVideoTypes.has(file.type)) {
+      onError("Please choose an MP4, WebM, OGG, or MOV video file.");
       return;
     }
 

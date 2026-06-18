@@ -8,6 +8,7 @@ import {
   fallbackWorkExperience,
 } from "@/lib/fallbackContent";
 import { normaliseProjectMedia } from "@/lib/projectMedia";
+import { normalizeExternalUrl, normalizePublicAssetUrl } from "@/lib/safeUrl";
 import { isSupabaseConfigured, supabase } from "@/lib/supabase";
 import type {
   AboutContentRow,
@@ -26,12 +27,43 @@ function logError(label: string, error: unknown) {
 function normaliseProjectRow(project: ProjectRow): ProjectRow {
   return {
     ...project,
+    cover_url: normalizePublicAssetUrl(project.cover_url),
+    link_live: normalizeExternalUrl(project.link_live),
+    link_repo: normalizeExternalUrl(project.link_repo),
+    link_case_study: normalizeExternalUrl(project.link_case_study),
     media_items: normaliseProjectMedia(project.media_items),
   };
 }
 
+function normaliseEducationRow(entry: EducationRow): EducationRow {
+  return {
+    ...entry,
+    logo_path: normalizePublicAssetUrl(entry.logo_path),
+  };
+}
+
+function normaliseWorkExperienceRow(entry: WorkExperienceRow): WorkExperienceRow {
+  return {
+    ...entry,
+    logo_url: normalizePublicAssetUrl(entry.logo_url),
+    url: normalizeExternalUrl(entry.url),
+  };
+}
+
+function normaliseBlogPostRow(post: BlogPostRow): BlogPostRow {
+  return {
+    ...post,
+    cover_url: normalizePublicAssetUrl(post.cover_url),
+  };
+}
+
 export async function getAboutContent(): Promise<AboutContentRow> {
-  if (!isSupabaseConfigured) return fallbackAboutContent;
+  if (!isSupabaseConfigured) {
+    return {
+      ...fallbackAboutContent,
+      profile_image_url: normalizePublicAssetUrl(fallbackAboutContent.profile_image_url),
+    };
+  }
   try {
     const { data, error } = await supabase
       .from("about_content")
@@ -40,21 +72,27 @@ export async function getAboutContent(): Promise<AboutContentRow> {
       .single();
     if (error || !data) {
       logError("about_content", error);
-      return fallbackAboutContent;
+      return {
+        ...fallbackAboutContent,
+        profile_image_url: normalizePublicAssetUrl(fallbackAboutContent.profile_image_url),
+      };
     }
     return {
       ...fallbackAboutContent,
       ...(data as AboutContentRow),
-      profile_image_url: (data as AboutContentRow).profile_image_url ?? null,
+      profile_image_url: normalizePublicAssetUrl((data as AboutContentRow).profile_image_url),
     };
   } catch (error) {
     logError("about_content", error);
-    return fallbackAboutContent;
+    return {
+      ...fallbackAboutContent,
+      profile_image_url: normalizePublicAssetUrl(fallbackAboutContent.profile_image_url),
+    };
   }
 }
 
 export async function getEducationEntries(): Promise<EducationRow[]> {
-  if (!isSupabaseConfigured) return fallbackEducation;
+  if (!isSupabaseConfigured) return fallbackEducation.map(normaliseEducationRow);
   try {
     const { data, error } = await supabase
       .from("education")
@@ -62,12 +100,12 @@ export async function getEducationEntries(): Promise<EducationRow[]> {
       .order("sort_order", { ascending: true });
     if (error) {
       logError("education", error);
-      return fallbackEducation;
+      return fallbackEducation.map(normaliseEducationRow);
     }
-    return (data ?? []) as EducationRow[];
+    return ((data ?? []) as EducationRow[]).map(normaliseEducationRow);
   } catch (error) {
     logError("education", error);
-    return fallbackEducation;
+    return fallbackEducation.map(normaliseEducationRow);
   }
 }
 
@@ -95,7 +133,7 @@ export async function getProjects(includeDrafts = false): Promise<ProjectRow[]> 
 }
 
 export async function getWorkExperience(): Promise<WorkExperienceRow[]> {
-  if (!isSupabaseConfigured) return [...fallbackWorkExperience].sort((a, b) => b.sort_order - a.sort_order);
+  if (!isSupabaseConfigured) return [...fallbackWorkExperience].sort((a, b) => b.sort_order - a.sort_order).map(normaliseWorkExperienceRow);
   try {
     const { data, error } = await supabase
       .from("work_experience")
@@ -103,12 +141,12 @@ export async function getWorkExperience(): Promise<WorkExperienceRow[]> {
       .order("sort_order", { ascending: false });
     if (error) {
       logError("work_experience", error);
-      return fallbackWorkExperience;
+      return fallbackWorkExperience.map(normaliseWorkExperienceRow);
     }
-    return ((data ?? []) as WorkExperienceRow[]).map((entry) => ({ ...entry, logo_url: entry.logo_url ?? null }));
+    return ((data ?? []) as WorkExperienceRow[]).map(normaliseWorkExperienceRow);
   } catch (error) {
     logError("work_experience", error);
-    return fallbackWorkExperience;
+    return fallbackWorkExperience.map(normaliseWorkExperienceRow);
   }
 }
 
@@ -116,7 +154,8 @@ export async function getBlogPosts(includeDrafts = false): Promise<BlogPostRow[]
   if (!isSupabaseConfigured) {
     return fallbackBlogPosts
       .filter((post) => includeDrafts || !post.draft)
-      .sort((a, b) => new Date(b.pub_date).getTime() - new Date(a.pub_date).getTime());
+      .sort((a, b) => new Date(b.pub_date).getTime() - new Date(a.pub_date).getTime())
+      .map(normaliseBlogPostRow);
   }
 
   try {
@@ -125,12 +164,12 @@ export async function getBlogPosts(includeDrafts = false): Promise<BlogPostRow[]
     const { data, error } = await query;
     if (error) {
       logError("blog_posts", error);
-      return includeDrafts ? fallbackBlogPosts : fallbackBlogPosts.filter((post) => !post.draft);
+      return (includeDrafts ? fallbackBlogPosts : fallbackBlogPosts.filter((post) => !post.draft)).map(normaliseBlogPostRow);
     }
-    return (data ?? []) as BlogPostRow[];
+    return ((data ?? []) as BlogPostRow[]).map(normaliseBlogPostRow);
   } catch (error) {
     logError("blog_posts", error);
-    return includeDrafts ? fallbackBlogPosts : fallbackBlogPosts.filter((post) => !post.draft);
+    return (includeDrafts ? fallbackBlogPosts : fallbackBlogPosts.filter((post) => !post.draft)).map(normaliseBlogPostRow);
   }
 }
 
